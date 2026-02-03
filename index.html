@@ -26,6 +26,11 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(5px);
             border: 2px solid #334155;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
         }
         .word-card:hover {
             transform: scale(1.1);
@@ -44,7 +49,7 @@
             text-decoration: underline;
         }
         .zh-translation {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 500;
             color: #94a3b8;
             margin-top: 0.5rem;
@@ -87,19 +92,17 @@
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-    <!-- 漂浮裝飾物 (由 JS 生成) -->
     <div id="bg-decorations"></div>
 
     <header class="text-center mb-10 relative">
-        <!-- 獵人小公仔 (左) -->
         <div class="hidden md:block absolute left-10 top-0 hunter-avatar" onclick="speak('Hello little hunter! You are doing great!')">
             <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle cx="50" cy="40" r="30" fill="#fbcfe8" /> <!-- 臉 -->
-                <path d="M20 40 Q20 10 50 10 Q80 10 80 40" fill="#ec4899" /> <!-- 頭髮 -->
-                <circle cx="40" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
-                <circle cx="60" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
-                <path d="M45 50 Q50 55 55 50" stroke="#1e293b" fill="none" stroke-width="2" /> <!-- 嘴 -->
-                <path d="M30 70 L50 90 L70 70" fill="#fbbf24" /> <!-- 獵人披風 -->
+                <circle cx="50" cy="40" r="30" fill="#fbcfe8" />
+                <path d="M20 40 Q20 10 50 10 Q80 10 80 40" fill="#ec4899" />
+                <circle cx="40" cy="40" r="3" fill="#1e293b" />
+                <circle cx="60" cy="40" r="3" fill="#1e293b" />
+                <path d="M45 50 Q50 55 55 50" stroke="#1e293b" fill="none" stroke-width="2" />
+                <path d="M30 70 L50 90 L70 70" fill="#fbbf24" />
             </svg>
             <p class="text-xs text-pink-400 font-bold mt-2">點我說話！</p>
         </div>
@@ -107,63 +110,96 @@
         <h1 class="kids-font text-5xl md:text-7xl text-yellow-400 golden-glow mb-2">GOLDEN</h1>
         <p class="text-lg md:text-xl text-slate-400 font-bold">與獵人夥伴一起閃耀學英文！✨</p>
 
-        <!-- 獵人小公仔 (右) -->
         <div class="hidden md:block absolute right-10 top-0 hunter-avatar" onclick="speak('Great job! Keep glowing!')">
             <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle cx="50" cy="40" r="30" fill="#dcfce7" /> <!-- 臉 -->
-                <path d="M20 40 Q20 10 50 10 Q80 10 80 40" fill="#10b981" /> <!-- 頭髮 -->
-                <circle cx="40" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
-                <circle cx="60" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
-                <path d="M45 50 Q50 55 55 50" stroke="#1e293b" fill="none" stroke-width="2" /> <!-- 嘴 -->
-                <rect x="40" y="70" width="20" height="20" fill="#6366f1" rx="5" /> <!-- 獵人服 -->
+                <circle cx="50" cy="40" r="30" fill="#dcfce7" />
+                <path d="M20 40 Q20 10 50 10 Q80 10 80 40" fill="#10b981" />
+                <circle cx="40" cy="40" r="3" fill="#1e293b" />
+                <circle cx="60" cy="40" r="3" fill="#1e293b" />
+                <path d="M45 50 Q50 55 55 50" stroke="#1e293b" fill="none" stroke-width="2" />
+                <rect x="40" y="70" width="20" height="20" fill="#6366f1" rx="5" />
             </svg>
             <p class="text-xs text-green-400 font-bold mt-2">點我鼓勵！</p>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto">
-        
-        <!-- 互動單字表 (重點生字) -->
+        <!-- 擴充後的重點生字卡 -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span class="text-yellow-400 text-3xl">⭐</span> 重點生字卡
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-white">
+                <span class="text-yellow-400 text-3xl">⭐</span> 重點生字卡 (點擊聽發音)
             </h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <button onclick="speak('Up')" class="word-card p-4 rounded-2xl text-center">
-                    <span class="kids-font text-2xl block text-pink-400">UP</span>
-                    <span class="zh-translation block">向上 ⬆️</span>
-                </button>
-                <button onclick="speak('Golden')" class="word-card p-4 rounded-2xl text-center">
-                    <span class="kids-font text-2xl block text-yellow-400">GOLDEN</span>
-                    <span class="zh-translation block">燦爛如金 🌟</span>
-                </button>
-                <button onclick="speak('Hunters')" class="word-card p-4 rounded-2xl text-center">
-                    <span class="kids-font text-2xl block text-blue-400">HUNTERS</span>
-                    <span class="zh-translation block">獵人 🏹</span>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <button onclick="speak('Hiding')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-pink-400">HIDING</span>
+                    <span class="zh-translation block">躲藏 🙈</span>
                 </button>
                 <button onclick="speak('Shining')" class="word-card p-4 rounded-2xl text-center">
-                    <span class="kids-font text-2xl block text-green-400">SHINING</span>
+                    <span class="kids-font text-xl block text-green-400">SHINING</span>
                     <span class="zh-translation block">閃耀 ✨</span>
+                </button>
+                <button onclick="speak('Born')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-blue-400">BORN</span>
+                    <span class="zh-translation block">出生/天生 👶</span>
+                </button>
+                <button onclick="speak('Cause')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-purple-400">CAUSE</span>
+                    <span class="zh-translation block">因為 💡</span>
+                </button>
+                <button onclick="speak('Hunters')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-red-400">HUNTERS</span>
+                    <span class="zh-translation block">獵人 🏹</span>
+                </button>
+                <button onclick="speak('Voices')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-indigo-400">VOICES</span>
+                    <span class="zh-translation block">聲音 🗣️</span>
+                </button>
+                <button onclick="speak('Strong')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-orange-400">STRONG</span>
+                    <span class="zh-translation block">強大 💪</span>
+                </button>
+                <button onclick="speak('Know')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-teal-400">KNOW</span>
+                    <span class="zh-translation block">知道 🧠</span>
+                </button>
+                <button onclick="speak('Believe')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-pink-500">BELIEVE</span>
+                    <span class="zh-translation block">相信 🙏</span>
+                </button>
+                <button onclick="speak('Moment')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-cyan-400">MOMENT</span>
+                    <span class="zh-translation block">時刻 ⏰</span>
+                </button>
+                <button onclick="speak('Together')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-yellow-300">TOGETHER</span>
+                    <span class="zh-translation block">一起 🤝</span>
+                </button>
+                <button onclick="speak('Glowing')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-emerald-400">GLOWING</span>
+                    <span class="zh-translation block">發光 🕯️</span>
+                </button>
+                <button onclick="speak('Golden')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-yellow-500">GOLDEN</span>
+                    <span class="zh-translation block">金色的 👑</span>
+                </button>
+                <button onclick="speak('Up')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-xl block text-blue-300">UP</span>
+                    <span class="zh-translation block">向上 ⬆️</span>
                 </button>
             </div>
         </section>
 
-        <!-- 歌詞全點讀區 -->
         <section class="bg-slate-900/50 p-6 md:p-10 rounded-3xl border border-slate-800 shadow-inner relative">
             <h2 class="text-2xl font-bold mb-8 text-center text-white">🎵 繽紛歌詞點讀機</h2>
-            
             <div class="space-y-12 text-center" id="lyrics-board">
-                <!-- 歌詞內容由 JS 動態生成 (為了保持彩色功能) -->
                 <div class="lyric-group" data-words="No more hiding, I’ll be shining"><span class="zh-translation">不再躲藏，我將閃耀</span></div>
                 <div class="lyric-group" data-words="Like I’m born to be"><span class="zh-translation">就像這是我命中注定的一樣</span></div>
                 <div class="lyric-group" data-words="‘Cause we are hunters, voices strong"><span class="zh-translation">因為我們是獵人，我們的聲音無比強大</span></div>
                 <div class="lyric-group" data-words="And I know I believe"><span class="zh-translation">而我知道我堅信這一切</span></div>
-                
                 <div class="lyric-group pt-8 border-t border-slate-800" data-words="We’re goin’ up, up, up"><span class="zh-translation italic">我們正在向上飛升</span></div>
                 <div class="lyric-group" data-words="It’s our moment"><span class="zh-translation italic">這是屬於我們的時刻</span></div>
                 <div class="lyric-group" data-words="You know together we’re glowing"><span class="zh-translation italic">你知道我們一起閃耀發光</span></div>
                 <div class="lyric-group" data-words="Gonna be, gonna be golden"><span class="zh-translation italic text-yellow-500 font-bold">我們將會、必然會燦爛如金</span></div>
-                
                 <div class="lyric-group pt-8 border-t border-slate-800" data-words="Oh, up, up, up"><span class="zh-translation">喔，直衝高空</span></div>
                 <div class="lyric-group" data-words="With our voices"><span class="zh-translation">伴隨我們的歌聲</span></div>
                 <div class="lyric-group">
@@ -177,7 +213,6 @@
             </div>
         </section>
 
-        <!-- 結語 -->
         <div class="mt-12 text-center p-8 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-yellow-900/20 border border-yellow-500/30">
             <div class="flex justify-center gap-4 mb-4">
                 <span>👑</span><span>👧</span><span>✨</span>
@@ -186,15 +221,20 @@
         </div>
     </main>
 
-    <footer class="text-center py-10 text-slate-500 text-xs">
-        獵魔女團學習版 🏹 勇敢發出你的歌聲
+    <footer class="text-center py-10 text-slate-500 flex flex-col items-center gap-4">
+        <p class="text-xs">獵魔女團學習版 🏹 勇敢發出你的歌聲</p>
+        <a href="https://github.com/hkspurs/yurilearning" target="_blank" class="flex items-center gap-2 text-slate-400 hover:text-yellow-400 transition-colors">
+            <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+            <span class="text-sm font-medium">View on GitHub</span>
+        </a>
     </footer>
 
     <script>
         const colors = ['#f472b6', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb7185', '#22d3ee', '#f87171'];
         let colorIndex = 0;
 
-        // 初始化歌詞
         function initLyrics() {
             document.querySelectorAll('[data-words]').forEach(el => {
                 const text = el.getAttribute('data-words');
@@ -211,7 +251,6 @@
             });
         }
 
-        // 語音功能
         function speak(text) {
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance();
@@ -223,7 +262,6 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // 背景裝飾
         function createDecorations() {
             const container = document.getElementById('bg-decorations');
             const icons = ['✨', '🌟', '🏹', '👑', '💖', '🎵'];
@@ -238,7 +276,6 @@
             }
         }
 
-        // 點擊特效
         function createSparkles() {
             for (let i = 0; i < 12; i++) {
                 const sparkle = document.createElement('div');
