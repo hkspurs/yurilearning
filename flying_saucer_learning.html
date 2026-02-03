@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太空冒險 - Five Little Men 英文點讀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #020617;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #f8fafc;
+            background: radial-gradient(circle at top, #1e1b4b 0%, #020617 100%);
+            overflow-x: hidden;
+        }
+        .kids-font {
+            font-family: 'Luckiest Guy', cursive;
+            letter-spacing: 2px;
+        }
+        .ufo-glow {
+            text-shadow: 0 0 15px #22d3ee, 0 0 30px #22d3ee;
+        }
+        .word-card {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(34, 211, 238, 0.1);
+            backdrop-filter: blur(5px);
+            border: 2px solid #164e63;
+        }
+        .word-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #22d3ee;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+        .clickable-word {
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            display: inline-block;
+            margin: 0 2px;
+        }
+        .clickable-word:hover {
+            transform: scale(1.3) rotate(5deg);
+            color: #22d3ee !important;
+            text-decoration: underline;
+        }
+        .zh-line {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        
+        /* 飛碟動畫 */
+        .ufo-container {
+            animation: drift 4s infinite ease-in-out;
+            cursor: pointer;
+        }
+        @keyframes drift {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-20px) rotate(3deg); }
+        }
+
+        /* 星星閃爍 */
+        .star {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: blink var(--duration) infinite;
+            z-index: -1;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .saucer-icon {
+            filter: drop-shadow(0 0 8px #22d3ee);
+        }
+        .lyric-block {
+            transition: background 0.3s;
+        }
+        .lyric-block:hover {
+            background: rgba(34, 211, 238, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div id="stars-container"></div>
+
+    <header class="text-center mb-12 relative">
+        <div class="ufo-container mb-4" onclick="speak('Ready for space adventure?')">
+            <svg class="mx-auto saucer-icon" width="120" height="60" viewBox="0 0 120 60">
+                <ellipse cx="60" cy="40" rx="50" ry="15" fill="#94a3b8" />
+                <path d="M30 35 Q60 5 90 35" fill="#22d3ee" opacity="0.6" />
+                <circle cx="40" cy="42" r="3" fill="#fbbf24" />
+                <circle cx="60" cy="45" r="3" fill="#fbbf24" />
+                <circle cx="80" cy="42" r="3" fill="#fbbf24" />
+            </svg>
+        </div>
+        <h1 class="kids-font text-5xl md:text-6xl text-cyan-400 ufo-glow mb-2">FIVE LITTLE MEN</h1>
+        <p class="text-lg text-slate-400 font-bold">跟著外星小人探索地球吧！🛸</p>
+    </header>
+
+    <main class="max-w-5xl mx-auto">
+        
+        <!-- 重點數字與生字卡 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-white">
+                <span class="text-cyan-400 text-3xl">🚀</span> 宇宙生字卡
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                <button onclick="speak('Five')" class="word-card p-4 rounded-2xl">
+                    <span class="kids-font text-3xl text-pink-400">5</span>
+                    <span class="block text-sm text-slate-400 mt-1">Five 五個</span>
+                </button>
+                <button onclick="speak('Flying saucer')" class="word-card p-4 rounded-2xl">
+                    <span class="text-3xl">🛸</span>
+                    <span class="block text-sm text-slate-400 mt-1">Flying saucer 飛碟</span>
+                </button>
+                <button onclick="speak('World')" class="word-card p-4 rounded-2xl">
+                    <span class="text-3xl">🌍</span>
+                    <span class="block text-sm text-slate-400 mt-1">World 世界</span>
+                </button>
+                <button onclick="speak('Sight')" class="word-card p-4 rounded-2xl">
+                    <span class="text-3xl">👀</span>
+                    <span class="block text-sm text-slate-400 mt-1">Sight 景色</span>
+                </button>
+                <button onclick="speak('Flew away')" class="word-card p-4 rounded-2xl">
+                    <span class="text-3xl">💨</span>
+                    <span class="block text-sm text-slate-400 mt-1">Flew away 飛走了</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 歌詞點讀區 -->
+        <section class="bg-slate-900/80 p-6 md:p-10 rounded-3xl border border-cyan-900/50 shadow-2xl relative mb-12">
+            <div class="space-y-8" id="lyrics-board">
+                
+                <!-- 5 Little Men -->
+                <div class="lyric-block p-4 rounded-xl">
+                    <div class="lyric-group" data-words="FIVE little men in a flying saucer"></div>
+                    <span class="zh-line">五個小人在一個飛碟裡</span>
+                    <div class="lyric-group" data-words="flew round the world one day."></div>
+                    <span class="zh-line">有一天繞著世界飛行</span>
+                    <div class="lyric-group" data-words="They looked left and right but they didn't like the sight"></div>
+                    <span class="zh-line">他們向左看、向右看，但不喜歡這景色</span>
+                    <div class="lyric-group" data-words="So one man flew away."></div>
+                    <span class="zh-line text-cyan-400">所以一個小人飛走了</span>
+                </div>
+
+                <!-- 4 Little Men -->
+                <div class="lyric-block p-4 rounded-xl border-t border-slate-800 pt-8">
+                    <div class="lyric-group" data-words="FOUR little men in a flying saucer"></div>
+                    <span class="zh-line">四個小人在一個飛碟裡</span>
+                    <div class="lyric-group" data-words="flew round the world one day."></div>
+                    <span class="zh-line">有一天繞著世界飛行</span>
+                    <div class="lyric-group" data-words="They looked left and right but they didn't like the sight"></div>
+                    <span class="zh-line">他們向左看、向右看，但不喜歡這景色</span>
+                    <div class="lyric-group" data-words="So one man flew away."></div>
+                    <span class="zh-line text-cyan-400">所以一個小人飛走了</span>
+                </div>
+
+                <!-- 3 Little Men -->
+                <div class="lyric-block p-4 rounded-xl border-t border-slate-800 pt-8">
+                    <div class="lyric-group" data-words="THREE little men in a flying saucer"></div>
+                    <span class="zh-line">三個小人在一個飛碟裡</span>
+                    <div class="lyric-group" data-words="flew round the world one day."></div>
+                    <span class="zh-line">有一天繞著世界飛行</span>
+                    <div class="lyric-group" data-words="They looked left and right but they didn't like the sight"></div>
+                    <span class="zh-line">他們向左看、向右看，但不喜歡這景色</span>
+                    <div class="lyric-group" data-words="So one man flew away."></div>
+                    <span class="zh-line text-cyan-400">所以一個小人飛走了</span>
+                </div>
+
+                <!-- 2 Little Men -->
+                <div class="lyric-block p-4 rounded-xl border-t border-slate-800 pt-8">
+                    <div class="lyric-group" data-words="TWO little men in a flying saucer"></div>
+                    <span class="zh-line">兩個小人在一個飛碟裡</span>
+                    <div class="lyric-group" data-words="flew round the world one day."></div>
+                    <span class="zh-line">有一天繞著世界飛行</span>
+                    <div class="lyric-group" data-words="They looked left and right but they didn't like the sight"></div>
+                    <span class="zh-line">他們向左看、向右看，但不喜歡這景色</span>
+                    <div class="lyric-group" data-words="So one man flew away."></div>
+                    <span class="zh-line text-cyan-400">所以一個小人飛走了</span>
+                </div>
+
+                <!-- 1 Little Man (Special grammar: He/He) -->
+                <div class="lyric-block p-4 rounded-xl border-t border-cyan-800/30 pt-8 bg-cyan-950/10">
+                    <div class="lyric-group" data-words="ONE little man in a flying saucer"></div>
+                    <span class="zh-line">一個小人在一個飛碟裡</span>
+                    <div class="lyric-group" data-words="flew round the world one day."></div>
+                    <span class="zh-line">有一天繞著世界飛行</span>
+                    <div class="lyric-group" data-words="He looked left and right but he didn't like the sight"></div>
+                    <span class="zh-line">他向左看、向右看，但他不喜歡這景色</span>
+                    <div class="lyric-group" data-words="So one man flew away."></div>
+                    <span class="zh-line text-yellow-400">所以最後一個小人也飛走了</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 互動提示 -->
+        <div class="text-center p-6 bg-gradient-to-b from-transparent to-cyan-900/20 rounded-t-full border-t border-cyan-500/20">
+            <p class="kids-font text-xl text-cyan-300">Bye bye, Space Men! 🛸💨</p>
+        </div>
+    </main>
+
+    <footer class="text-center py-10 text-slate-600">
+        <p class="text-sm">Space Learning Hub 🪐 陪孩子探索語言的奧妙</p>
+        <div class="mt-4 flex justify-center gap-4">
+            <a href="https://github.com/hkspurs/yurilearning" target="_blank" class="text-slate-500 hover:text-cyan-400">View on GitHub</a>
+        </div>
+    </footer>
+
+    <script>
+        const colors = ['#22d3ee', '#f472b6', '#fbbf24', '#a78bfa', '#34d399'];
+        
+        function initLyrics() {
+            document.querySelectorAll('[data-words]').forEach(el => {
+                const text = el.getAttribute('data-words');
+                const words = text.split(' ');
+                const wrapper = document.createElement('p');
+                wrapper.className = "text-2xl md:text-3xl kids-font mb-1 leading-tight";
+                
+                wrapper.innerHTML = words.map((word, i) => {
+                    const cleanWord = word.replace(/[.,!]/g, '');
+                    const color = colors[i % colors.length];
+                    return `<span class="clickable-word" style="color: ${color}" onclick="speak('${cleanWord}')">${word}</span>`;
+                }).join(' ');
+                
+                el.appendChild(wrapper);
+            });
+        }
+
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            msg.lang = 'en-US';
+            msg.rate = 0.8;
+            msg.pitch = 1.1;
+            
+            // 視覺震動
+            document.body.style.transform = "translateX(2px)";
+            setTimeout(() => document.body.style.transform = "translateX(-2px)", 50);
+            setTimeout(() => document.body.style.transform = "translateX(0)", 100);
+            
+            window.speechSynthesis.speak(msg);
+        }
+
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1 + 'px';
+                star.style.width = size;
+                star.style.height = size;
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
+            }
+        }
+
+        window.onload = () => {
+            initLyrics();
+            createStars();
+        };
+    </script>
+</body>
+</html>
