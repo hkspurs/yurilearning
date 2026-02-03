@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUNTR/X - GOLDEN 英文學習小天地</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #f8fafc;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%);
+            overflow-x: hidden;
+        }
+        .kids-font {
+            font-family: 'Luckiest Guy', cursive;
+            letter-spacing: 2px;
+        }
+        .golden-glow {
+            text-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24;
+        }
+        .word-card {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 2px solid #334155;
+        }
+        .word-card:hover {
+            transform: scale(1.1);
+            border-color: #fbbf24;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.3);
+        }
+        .clickable-word {
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            display: inline-block;
+            margin: 0 2px;
+        }
+        .clickable-word:hover {
+            transform: scale(1.2);
+            filter: brightness(1.2);
+            text-decoration: underline;
+        }
+        .zh-translation {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+            display: block;
+        }
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: twinkle 1.5s infinite;
+            z-index: 50;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* 獵人公仔動畫 */
+        .hunter-avatar {
+            animation: bounce 2s infinite ease-in-out;
+            cursor: pointer;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+        
+        /* 漂浮的小裝飾 */
+        .floating-icon {
+            position: fixed;
+            opacity: 0.2;
+            z-index: -1;
+            animation: float 10s infinite linear;
+        }
+        @keyframes float {
+            from { transform: translateY(100vh) rotate(0deg); }
+            to { transform: translateY(-10vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- 漂浮裝飾物 (由 JS 生成) -->
+    <div id="bg-decorations"></div>
+
+    <header class="text-center mb-10 relative">
+        <!-- 獵人小公仔 (左) -->
+        <div class="hidden md:block absolute left-10 top-0 hunter-avatar" onclick="speak('Hello little hunter! You are doing great!')">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="40" r="30" fill="#fbcfe8" /> <!-- 臉 -->
+                <path d="M20 40 Q20 10 50 10 Q80 10 80 40" fill="#ec4899" /> <!-- 頭髮 -->
+                <circle cx="40" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
+                <circle cx="60" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
+                <path d="M45 50 Q50 55 55 50" stroke="#1e293b" fill="none" stroke-width="2" /> <!-- 嘴 -->
+                <path d="M30 70 L50 90 L70 70" fill="#fbbf24" /> <!-- 獵人披風 -->
+            </svg>
+            <p class="text-xs text-pink-400 font-bold mt-2">點我說話！</p>
+        </div>
+
+        <h1 class="kids-font text-5xl md:text-7xl text-yellow-400 golden-glow mb-2">GOLDEN</h1>
+        <p class="text-lg md:text-xl text-slate-400 font-bold">與獵人夥伴一起閃耀學英文！✨</p>
+
+        <!-- 獵人小公仔 (右) -->
+        <div class="hidden md:block absolute right-10 top-0 hunter-avatar" onclick="speak('Great job! Keep glowing!')">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="40" r="30" fill="#dcfce7" /> <!-- 臉 -->
+                <path d="M20 40 Q20 10 50 10 Q80 10 80 40" fill="#10b981" /> <!-- 頭髮 -->
+                <circle cx="40" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
+                <circle cx="60" cy="40" r="3" fill="#1e293b" /> <!-- 眼 -->
+                <path d="M45 50 Q50 55 55 50" stroke="#1e293b" fill="none" stroke-width="2" /> <!-- 嘴 -->
+                <rect x="40" y="70" width="20" height="20" fill="#6366f1" rx="5" /> <!-- 獵人服 -->
+            </svg>
+            <p class="text-xs text-green-400 font-bold mt-2">點我鼓勵！</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto">
+        
+        <!-- 互動單字表 (重點生字) -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <span class="text-yellow-400 text-3xl">⭐</span> 重點生字卡
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <button onclick="speak('Up')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-2xl block text-pink-400">UP</span>
+                    <span class="zh-translation block">向上 ⬆️</span>
+                </button>
+                <button onclick="speak('Golden')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-2xl block text-yellow-400">GOLDEN</span>
+                    <span class="zh-translation block">燦爛如金 🌟</span>
+                </button>
+                <button onclick="speak('Hunters')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-2xl block text-blue-400">HUNTERS</span>
+                    <span class="zh-translation block">獵人 🏹</span>
+                </button>
+                <button onclick="speak('Shining')" class="word-card p-4 rounded-2xl text-center">
+                    <span class="kids-font text-2xl block text-green-400">SHINING</span>
+                    <span class="zh-translation block">閃耀 ✨</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 歌詞全點讀區 -->
+        <section class="bg-slate-900/50 p-6 md:p-10 rounded-3xl border border-slate-800 shadow-inner relative">
+            <h2 class="text-2xl font-bold mb-8 text-center text-white">🎵 繽紛歌詞點讀機</h2>
+            
+            <div class="space-y-12 text-center" id="lyrics-board">
+                <!-- 歌詞內容由 JS 動態生成 (為了保持彩色功能) -->
+                <div class="lyric-group" data-words="No more hiding, I’ll be shining"><span class="zh-translation">不再躲藏，我將閃耀</span></div>
+                <div class="lyric-group" data-words="Like I’m born to be"><span class="zh-translation">就像這是我命中注定的一樣</span></div>
+                <div class="lyric-group" data-words="‘Cause we are hunters, voices strong"><span class="zh-translation">因為我們是獵人，我們的聲音無比強大</span></div>
+                <div class="lyric-group" data-words="And I know I believe"><span class="zh-translation">而我知道我堅信這一切</span></div>
+                
+                <div class="lyric-group pt-8 border-t border-slate-800" data-words="We’re goin’ up, up, up"><span class="zh-translation italic">我們正在向上飛升</span></div>
+                <div class="lyric-group" data-words="It’s our moment"><span class="zh-translation italic">這是屬於我們的時刻</span></div>
+                <div class="lyric-group" data-words="You know together we’re glowing"><span class="zh-translation italic">你知道我們一起閃耀發光</span></div>
+                <div class="lyric-group" data-words="Gonna be, gonna be golden"><span class="zh-translation italic text-yellow-500 font-bold">我們將會、必然會燦爛如金</span></div>
+                
+                <div class="lyric-group pt-8 border-t border-slate-800" data-words="Oh, up, up, up"><span class="zh-translation">喔，直衝高空</span></div>
+                <div class="lyric-group" data-words="With our voices"><span class="zh-translation">伴隨我們的歌聲</span></div>
+                <div class="lyric-group">
+                    <p class="text-2xl font-bold text-white mb-2">영원히 깨질 수 없는</p>
+                    <span class="zh-translation text-sm opacity-70">永遠無法破碎 (韓文)</span>
+                </div>
+                <div class="lyric-group">
+                    <p class="text-4xl kids-font leading-relaxed golden-glow" data-words="Gonna be, gonna be golden"></p>
+                    <span class="zh-translation italic">我們注定燦爛如金</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 結語 -->
+        <div class="mt-12 text-center p-8 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-yellow-900/20 border border-yellow-500/30">
+            <div class="flex justify-center gap-4 mb-4">
+                <span>👑</span><span>👧</span><span>✨</span>
+            </div>
+            <p class="text-2xl text-yellow-200 kids-font">You are the Golden Star!</p>
+        </div>
+    </main>
+
+    <footer class="text-center py-10 text-slate-500 text-xs">
+        獵魔女團學習版 🏹 勇敢發出你的歌聲
+    </footer>
+
+    <script>
+        const colors = ['#f472b6', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb7185', '#22d3ee', '#f87171'];
+        let colorIndex = 0;
+
+        // 初始化歌詞
+        function initLyrics() {
+            document.querySelectorAll('[data-words]').forEach(el => {
+                const text = el.getAttribute('data-words');
+                const words = text.split(' ');
+                const wrapper = document.createElement('p');
+                wrapper.className = "text-4xl kids-font leading-relaxed";
+                wrapper.innerHTML = words.map(word => {
+                    const cleanWord = word.replace(/[‘’,.!]/g, '');
+                    const color = colors[colorIndex % colors.length];
+                    colorIndex++;
+                    return `<span class="clickable-word" style="color: ${color}" onclick="speak('${cleanWord}')">${word}</span>`;
+                }).join(' ');
+                el.insertBefore(wrapper, el.firstChild);
+            });
+        }
+
+        // 語音功能
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            msg.lang = 'en-US';
+            msg.rate = 0.75; 
+            msg.pitch = 1.2; 
+            createSparkles();
+            window.speechSynthesis.speak(msg);
+        }
+
+        // 背景裝飾
+        function createDecorations() {
+            const container = document.getElementById('bg-decorations');
+            const icons = ['✨', '🌟', '🏹', '👑', '💖', '🎵'];
+            for (let i = 0; i < 15; i++) {
+                const div = document.createElement('div');
+                div.className = 'floating-icon';
+                div.innerText = icons[Math.floor(Math.random() * icons.length)];
+                div.style.left = Math.random() * 100 + 'vw';
+                div.style.animationDelay = Math.random() * 10 + 's';
+                div.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                container.appendChild(div);
+            }
+        }
+
+        // 點擊特效
+        function createSparkles() {
+            for (let i = 0; i < 12; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.innerHTML = '✨';
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = Math.random() * 100 + 'vh';
+                sparkle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1200);
+            }
+        }
+
+        window.onload = () => {
+            initLyrics();
+            createDecorations();
+        };
+    </script>
+</body>
+</html>
