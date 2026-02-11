@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中文幼稚園升小一｜配詞小遊戲</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: radial-gradient(circle at top, #dbeafe, #f8fafc 45%, #fef3c7 100%);
+      min-height: 100vh;
+    }
+    .bubble {
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+  <main class="max-w-3xl mx-auto">
+    <header class="text-center mb-6">
+      <h1 class="text-3xl md:text-5xl font-black text-blue-700">中文配詞小遊戲</h1>
+      <p class="mt-2 text-slate-700 text-base md:text-lg">適合幼稚園升小一：看前字，選出正確後字組成詞語。</p>
+    </header>
+
+    <section class="bg-white/90 shadow-xl rounded-3xl p-5 md:p-8 border-4 border-blue-100">
+      <div class="flex items-center justify-between mb-3">
+        <p class="font-bold text-slate-700">進度：<span id="progressText">1 / 10</span></p>
+        <p class="font-bold text-amber-600">分數：<span id="scoreText">0</span></p>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progressBar" class="bg-blue-500 h-3 rounded-full transition-all duration-300" style="width: 10%"></div>
+      </div>
+
+      <div id="questionCard" class="text-center mb-6">
+        <p class="text-slate-500 mb-2">請選擇正確配詞：</p>
+        <div class="inline-flex items-center gap-3 bg-blue-50 rounded-2xl px-6 py-4">
+          <span id="firstChar" class="text-5xl font-black text-blue-700">上</span>
+          <span class="text-3xl font-bold text-slate-400">＋</span>
+          <span class="text-4xl text-slate-400">？</span>
+        </div>
+      </div>
+
+      <div id="options" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+
+      <div id="feedback" class="mt-5 text-center text-xl font-bold min-h-[2rem]"></div>
+
+      <div id="exampleBox" class="hidden mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"></div>
+
+      <div id="resultBox" class="hidden text-center mt-8">
+        <p id="resultTitle" class="text-3xl font-black text-blue-700"></p>
+        <p id="resultScore" class="mt-2 text-xl font-bold"></p>
+        <button id="restartBtn" class="mt-5 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700">再玩一次</button>
+      </div>
+    </section>
+
+    <p class="text-center mt-6 text-slate-500 text-sm">小提示：家長可讀出詞語，讓小朋友跟讀。</p>
+  </main>
+
+  <script>
+    const questions = [
+      { first: '上', answer: '學', options: ['學', '山', '天'], word: '上學', sentence: '例句：今天我要上學。' },
+      { first: '老', answer: '師', options: ['鼠', '師', '虎'], word: '老師', sentence: '例句：老師教我們寫字。' },
+      { first: '同', answer: '學', options: ['學', '門', '車'], word: '同學', sentence: '例句：同學一起玩遊戲。' },
+      { first: '書', answer: '包', options: ['店', '包', '本'], word: '書包', sentence: '例句：我的書包是藍色。' },
+      { first: '天', answer: '空', options: ['空', '氣', '橋'], word: '天空', sentence: '例句：天空有白雲。' },
+      { first: '白', answer: '雲', options: ['菜', '雲', '米'], word: '白雲', sentence: '例句：白雲慢慢飄。' },
+      { first: '太', answer: '陽', options: ['陽', '高', '平'], word: '太陽', sentence: '例句：太陽出來了。' },
+      { first: '開', answer: '心', options: ['心', '門', '花'], word: '開心', sentence: '例句：我今天很開心。' },
+      { first: '朋', answer: '友', options: ['有', '放', '友'], word: '朋友', sentence: '例句：朋友和我一起畫畫。' },
+      { first: '吃', answer: '飯', options: ['飯', '書', '球'], word: '吃飯', sentence: '例句：我們一起吃飯。' }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let locked = false;
+
+    const firstChar = document.getElementById('firstChar');
+    const optionsEl = document.getElementById('options');
+    const feedback = document.getElementById('feedback');
+    const scoreText = document.getElementById('scoreText');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const resultBox = document.getElementById('resultBox');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultScore = document.getElementById('resultScore');
+    const exampleBox = document.getElementById('exampleBox');
+    const questionCard = document.getElementById('questionCard');
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function renderQuestion() {
+      locked = false;
+      feedback.textContent = '';
+      exampleBox.classList.add('hidden');
+      const q = questions[current];
+      firstChar.textContent = q.first;
+      optionsEl.innerHTML = '';
+
+      shuffle(q.options).forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'bubble px-4 py-5 rounded-2xl border-2 border-blue-200 bg-blue-50 text-3xl font-black text-blue-700 hover:bg-blue-100 transition';
+        btn.style.animationDelay = `${idx * 0.1}s`;
+        btn.textContent = opt;
+        btn.onclick = () => handleAnswer(opt, btn);
+        optionsEl.appendChild(btn);
+      });
+
+      progressText.textContent = `${current + 1} / ${questions.length}`;
+      progressBar.style.width = `${((current + 1) / questions.length) * 100}%`;
+    }
+
+    function handleAnswer(choice, button) {
+      if (locked) return;
+      locked = true;
+
+      const q = questions[current];
+      const buttons = optionsEl.querySelectorAll('button');
+      buttons.forEach(btn => (btn.disabled = true));
+
+      if (choice === q.answer) {
+        score += 10;
+        scoreText.textContent = score;
+        button.classList.remove('bg-blue-50');
+        button.classList.add('bg-emerald-200', 'border-emerald-400', 'text-emerald-800');
+        feedback.textContent = `✅ 答對了！「${q.word}」`;
+        feedback.className = 'mt-5 text-center text-xl font-bold text-emerald-600 min-h-[2rem]';
+      } else {
+        button.classList.remove('bg-blue-50');
+        button.classList.add('bg-rose-200', 'border-rose-400', 'text-rose-800');
+        buttons.forEach(btn => {
+          if (btn.textContent === q.answer) {
+            btn.classList.remove('bg-blue-50');
+            btn.classList.add('bg-emerald-200', 'border-emerald-400', 'text-emerald-800');
+          }
+        });
+        feedback.textContent = `❌ 再試試看！正確是「${q.word}」`;
+        feedback.className = 'mt-5 text-center text-xl font-bold text-rose-600 min-h-[2rem]';
+      }
+
+      exampleBox.textContent = q.sentence;
+      exampleBox.classList.remove('hidden');
+
+      setTimeout(() => {
+        current += 1;
+        if (current < questions.length) {
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }, 1200);
+    }
+
+    function showResult() {
+      questionCard.classList.add('hidden');
+      optionsEl.classList.add('hidden');
+      feedback.classList.add('hidden');
+      exampleBox.classList.add('hidden');
+      resultBox.classList.remove('hidden');
+
+      resultScore.textContent = `你得到 ${score} / ${questions.length * 10} 分！`;
+      if (score >= 80) {
+        resultTitle.textContent = '太棒了！你是配詞小達人 🏆';
+      } else if (score >= 50) {
+        resultTitle.textContent = '做得很好！再練習一次會更厲害 🌟';
+      } else {
+        resultTitle.textContent = '不錯的開始！一起再挑戰一次 💪';
+      }
+    }
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      current = 0;
+      score = 0;
+      scoreText.textContent = '0';
+      resultBox.classList.add('hidden');
+      questionCard.classList.remove('hidden');
+      optionsEl.classList.remove('hidden');
+      feedback.classList.remove('hidden');
+      renderQuestion();
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
