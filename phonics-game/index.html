@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YURI Learning - Two-letter Phonics Game</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; background: #f7f7fb; color: #222; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.08); margin-bottom: 16px; }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    h2 { font-size: 20px; margin: 0 0 12px; }
+    p { line-height: 1.6; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    button, select { font-size: 18px; border: 0; border-radius: 14px; padding: 12px 16px; cursor: pointer; }
+    button { background: #e9ecff; }
+    button.primary { background: #3346d3; color: white; }
+    .choice { min-width: 92px; min-height: 70px; font-size: 30px; font-weight: 800; }
+    .big { font-size: 48px; font-weight: 900; text-align: center; padding: 14px; }
+    .status { font-size: 22px; font-weight: 700; min-height: 34px; }
+    .small { font-size: 14px; color: #666; }
+    .score { font-size: 18px; font-weight: 700; }
+    input[type="file"] { font-size: 16px; }
+    textarea { width: 100%; min-height: 160px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; border: 1px solid #ddd; border-radius: 12px; padding: 12px; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>YURI Learning - Two-letter Phonics Game</h1>
+      <p>用原片音軌學兩隻字母合音，例如 BA / BE / BI / BO / BU。預設會嘗試載入 <code>assets/phonics_audio.mp3</code>，亦可以手動選擇音軌。</p>
+      <div class="row">
+        <input id="audioFile" type="file" accept="audio/*" />
+        <select id="rowSelect"></select>
+        <button class="primary" id="startBtn">開始遊戲</button>
+      </div>
+      <p class="small">如 GitHub Pages 未能播放音軌，請按「選擇檔案」載入 phonics_audio.mp3。</p>
+      <audio id="audio" preload="auto" src="assets/phonics_audio.mp3"></audio>
+    </section>
+
+    <section class="card">
+      <h2>聽音，揀返正確兩字母</h2>
+      <div class="big" id="question">?</div>
+      <div class="row" style="justify-content:center;margin:14px 0;">
+        <button id="playBtn">再聽一次</button>
+        <button id="slowBtn">慢速聽</button>
+        <button id="showBtn">顯示答案</button>
+      </div>
+      <div class="row" id="choices" style="justify-content:center;"></div>
+      <p class="status" id="status"></p>
+      <p class="score" id="score">分數：0 / 0</p>
+    </section>
+
+    <section class="card">
+      <h2>Clips 設定</h2>
+      <p class="small">格式：每個音節是 [開始秒數, 完結秒數]。你可以按原片音軌微調。</p>
+      <textarea id="configBox"></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button id="applyConfigBtn">套用設定</button>
+        <button id="resetConfigBtn">還原預設</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="clips-config.js"></script>
+  <script>
+    const audio = document.getElementById('audio');
+    const audioFile = document.getElementById('audioFile');
+    const rowSelect = document.getElementById('rowSelect');
+    const choices = document.getElementById('choices');
+    const statusEl = document.getElementById('status');
+    const scoreEl = document.getElementById('score');
+    const questionEl = document.getElementById('question');
+    const configBox = document.getElementById('configBox');
+
+    let config = JSON.parse(JSON.stringify(window.PHONICS_CLIPS || {}));
+    let answer = null;
+    let score = 0;
+    let total = 0;
+    let stopTimer = null;
+
+    function renderConfig() {
+      configBox.value = JSON.stringify(config, null, 2);
+      rowSelect.innerHTML = '';
+      Object.keys(config).forEach(rowName => {
+        const opt = document.createElement('option');
+        opt.value = rowName;
+        opt.textContent = rowName + '：' + Object.keys(config[rowName]).join(' ');
+        rowSelect.appendChild(opt);
+      });
+    }
+
+    function getItems() {
+      return Object.keys(config[rowSelect.value] || {});
+    }
+
+    function playClip(name, rate = 1) {
+      const clip = config[rowSelect.value]?.[name];
+      if (!clip) return;
+      const [start, end] = clip;
+      clearTimeout(stopTimer);
+      audio.pause();
+      audio.playbackRate = rate;
+      audio.currentTime = start;
+      audio.play().catch(() => {
+        statusEl.textContent = '請先按一次畫面，或手動選擇 phonics_audio.mp3。';
+      });
+      stopTimer = setTimeout(() => {
+        audio.pause();
+        audio.playbackRate = 1;
+      }, Math.max(100, (end - start) * 1000 / rate));
+    }
+
+    function nextQuestion() {
+      const items = getItems();
+      answer = items[Math.floor(Math.random() * items.length)];
+      questionEl.textContent = '聽一聽';
+      statusEl.textContent = '';
+      choices.innerHTML = '';
+      items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.textContent = item;
+        btn.onclick = () => checkAnswer(item);
+        choices.appendChild(btn);
+      });
+      setTimeout(() => playClip(answer), 200);
+    }
+
+    function checkAnswer(item) {
+      total++;
+      if (item === answer) {
+        score++;
+        statusEl.textContent = '答啱！' + answer;
+        questionEl.textContent = answer;
+        setTimeout(nextQuestion, 900);
+      } else {
+        statusEl.textContent = '再聽一次，試多次。';
+        playClip(answer);
+      }
+      scoreEl.textContent = `分數：${score} / ${total}`;
+    }
+
+    audioFile.addEventListener('change', () => {
+      const file = audioFile.files?.[0];
+      if (file) audio.src = URL.createObjectURL(file);
+    });
+
+    document.getElementById('startBtn').onclick = nextQuestion;
+    document.getElementById('playBtn').onclick = () => answer && playClip(answer);
+    document.getElementById('slowBtn').onclick = () => answer && playClip(answer, 0.75);
+    document.getElementById('showBtn').onclick = () => { if (answer) { questionEl.textContent = answer; statusEl.textContent = '答案：' + answer; } };
+    document.getElementById('applyConfigBtn').onclick = () => {
+      try { config = JSON.parse(configBox.value); renderConfig(); statusEl.textContent = '已套用設定。'; }
+      catch (e) { statusEl.textContent = '設定格式有問題，請檢查 JSON。'; }
+    };
+    document.getElementById('resetConfigBtn').onclick = () => { config = JSON.parse(JSON.stringify(window.PHONICS_CLIPS || {})); renderConfig(); };
+
+    renderConfig();
+  </script>
+</body>
+</html>
