@@ -12,15 +12,18 @@
     h1 { font-size: 28px; margin: 0 0 8px; }
     h2 { font-size: 20px; margin: 0 0 12px; }
     p { line-height: 1.6; }
+    code { background: #f0f0f4; border-radius: 6px; padding: 2px 5px; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     button, select { font-size: 18px; border: 0; border-radius: 14px; padding: 12px 16px; cursor: pointer; }
     button { background: #e9ecff; }
     button.primary { background: #3346d3; color: white; }
-    .choice { min-width: 92px; min-height: 70px; font-size: 30px; font-weight: 800; }
+    button.warning { background: #fff1c7; }
+    .choice, .preview { min-width: 92px; min-height: 70px; font-size: 30px; font-weight: 800; }
     .big { font-size: 48px; font-weight: 900; text-align: center; padding: 14px; }
     .status { font-size: 22px; font-weight: 700; min-height: 34px; }
     .small { font-size: 14px; color: #666; }
     .score { font-size: 18px; font-weight: 700; }
+    .notice { background: #fff6d8; border: 1px solid #f1d98d; border-radius: 12px; padding: 12px; margin-top: 12px; }
     input[type="file"] { font-size: 16px; }
     textarea { width: 100%; min-height: 160px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; border: 1px solid #ddd; border-radius: 12px; padding: 12px; box-sizing: border-box; }
   </style>
@@ -34,9 +37,17 @@
         <input id="audioFile" type="file" accept="audio/*" />
         <select id="rowSelect"></select>
         <button class="primary" id="startBtn">開始遊戲</button>
+        <button class="warning" id="testAudioBtn">測試播放第一個音</button>
       </div>
-      <p class="small">如 GitHub Pages 未能播放音軌，請按「選擇檔案」載入 phonics_audio.mp3。</p>
+      <div class="notice" id="audioNotice">檢查音軌中……</div>
+      <p class="small">如果未上載 MP3 到 GitHub，請先用「選擇檔案」載入本機 phonics_audio.mp3；否則撳字母都會冇聲。</p>
       <audio id="audio" preload="auto" src="assets/phonics_audio.mp3"></audio>
+    </section>
+
+    <section class="card">
+      <h2>先試聽每個音</h2>
+      <p class="small">撳下面 BA / BE / BI / BO / BU，可以直接播放對應片段，用嚟測試音軌同時間位。</p>
+      <div class="row" id="previewButtons" style="justify-content:center;"></div>
     </section>
 
     <section class="card">
@@ -69,16 +80,33 @@
     const audioFile = document.getElementById('audioFile');
     const rowSelect = document.getElementById('rowSelect');
     const choices = document.getElementById('choices');
+    const previewButtons = document.getElementById('previewButtons');
     const statusEl = document.getElementById('status');
     const scoreEl = document.getElementById('score');
     const questionEl = document.getElementById('question');
     const configBox = document.getElementById('configBox');
+    const audioNotice = document.getElementById('audioNotice');
 
     let config = JSON.parse(JSON.stringify(window.PHONICS_CLIPS || {}));
     let answer = null;
     let score = 0;
     let total = 0;
     let stopTimer = null;
+    let hasAudio = false;
+
+    function setNotice(message) {
+      audioNotice.textContent = message;
+    }
+
+    audio.addEventListener('canplaythrough', () => {
+      hasAudio = true;
+      setNotice('音軌已載入，可以播放。');
+    });
+
+    audio.addEventListener('error', () => {
+      hasAudio = false;
+      setNotice('未能載入 assets/phonics_audio.mp3。請先上載 MP3 到 GitHub，或用「選擇檔案」載入本機 MP3。');
+    });
 
     function renderConfig() {
       configBox.value = JSON.stringify(config, null, 2);
@@ -89,10 +117,26 @@
         opt.textContent = rowName + '：' + Object.keys(config[rowName]).join(' ');
         rowSelect.appendChild(opt);
       });
+      renderPreviewButtons();
     }
 
     function getItems() {
       return Object.keys(config[rowSelect.value] || {});
+    }
+
+    function renderPreviewButtons() {
+      previewButtons.innerHTML = '';
+      getItems().forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'preview';
+        btn.textContent = item;
+        btn.onclick = () => {
+          questionEl.textContent = item;
+          statusEl.textContent = '試聽：' + item;
+          playClip(item);
+        };
+        previewButtons.appendChild(btn);
+      });
     }
 
     function playClip(name, rate = 1) {
@@ -103,9 +147,12 @@
       audio.pause();
       audio.playbackRate = rate;
       audio.currentTime = start;
-      audio.play().catch(() => {
-        statusEl.textContent = '請先按一次畫面，或手動選擇 phonics_audio.mp3。';
-      });
+      const promise = audio.play();
+      if (promise) {
+        promise.catch(() => {
+          setNotice('未能播放音軌。iPhone/Safari 請先用「選擇檔案」載入 MP3，或先撳一次「測試播放第一個音」。');
+        });
+      }
       stopTimer = setTimeout(() => {
         audio.pause();
         audio.playbackRate = 1;
@@ -125,7 +172,7 @@
         btn.onclick = () => checkAnswer(item);
         choices.appendChild(btn);
       });
-      setTimeout(() => playClip(answer), 200);
+      playClip(answer);
     }
 
     function checkAnswer(item) {
@@ -144,10 +191,16 @@
 
     audioFile.addEventListener('change', () => {
       const file = audioFile.files?.[0];
-      if (file) audio.src = URL.createObjectURL(file);
+      if (file) {
+        audio.src = URL.createObjectURL(file);
+        hasAudio = true;
+        setNotice('已載入本機音軌：' + file.name);
+      }
     });
 
+    rowSelect.addEventListener('change', renderPreviewButtons);
     document.getElementById('startBtn').onclick = nextQuestion;
+    document.getElementById('testAudioBtn').onclick = () => { const first = getItems()[0]; if (first) playClip(first); };
     document.getElementById('playBtn').onclick = () => answer && playClip(answer);
     document.getElementById('slowBtn').onclick = () => answer && playClip(answer, 0.75);
     document.getElementById('showBtn').onclick = () => { if (answer) { questionEl.textContent = answer; statusEl.textContent = '答案：' + answer; } };
