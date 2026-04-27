@@ -1,371 +1,43 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YURI Learning - Kawaii Phonics Quiz</title>
-  <style>
-    :root {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --bg: #fff7fb;
-      --card: #ffffff;
-      --ink: #2b2528;
-      --muted: #746a70;
-      --pink: #ffd8e8;
-      --blue: #dff0ff;
-      --yellow: #fff1bd;
-      --green: #dcf7df;
-      --purple: #ece4ff;
-      --primary: #ff7aa8;
-      --primary-dark: #d94d7c;
-    }
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at top left, #ffe4f1 0, transparent 28%),
-        radial-gradient(circle at top right, #e2f3ff 0, transparent 26%),
-        var(--bg);
-      color: var(--ink);
-    }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 18px; }
-    .card {
-      background: rgba(255,255,255,.92);
-      border: 2px solid rgba(255, 190, 215, .55);
-      border-radius: 28px;
-      padding: 20px;
-      box-shadow: 0 10px 26px rgba(180, 90, 130, .13);
-      margin-bottom: 16px;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: center;
-    }
-    h1 { font-size: 30px; margin: 0 0 8px; }
-    h2 { font-size: 20px; margin: 0 0 12px; }
-    p { line-height: 1.6; }
-    .small { font-size: 14px; color: var(--muted); }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .center { justify-content: center; text-align: center; }
-    button, select {
-      font-size: 18px;
-      border: 0;
-      border-radius: 18px;
-      padding: 12px 16px;
-      cursor: pointer;
-      box-shadow: 0 3px 0 rgba(0,0,0,.08);
-    }
-    button { background: var(--purple); color: var(--ink); }
-    button.primary { background: var(--primary); color: white; font-weight: 800; }
-    button.primary:hover { background: var(--primary-dark); }
-    button.soft { background: var(--yellow); }
-    button.choice, button.preview {
-      min-width: 92px;
-      min-height: 70px;
-      font-size: 30px;
-      font-weight: 900;
-      background: linear-gradient(180deg, #fff, #f2ecff);
-      border: 2px solid #ded3ff;
-    }
-    button.choice.correct { background: var(--green); border-color: #85dc91; }
-    button.choice.wrong { background: #ffe1e1; border-color: #ff9e9e; }
-    .big {
-      font-size: 54px;
-      font-weight: 900;
-      text-align: center;
-      padding: 14px;
-    }
-    .status { font-size: 22px; font-weight: 800; min-height: 34px; text-align: center; }
-    .score { font-size: 19px; font-weight: 800; }
-    .notice { background: #fff8df; border: 1px solid #f0d783; border-radius: 16px; padding: 12px; margin-top: 12px; }
-    .mascot-row { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
-    .mascot {
-      width: 88px;
-      height: 88px;
-      border-radius: 28px;
-      display: grid;
-      place-items: center;
-      font-size: 46px;
-      background: var(--pink);
-      border: 3px solid rgba(255,255,255,.9);
-      box-shadow: 0 8px 18px rgba(180, 90, 130, .16);
-      user-select: none;
-    }
-    .mascot:nth-child(2) { background: var(--blue); }
-    .mascot:nth-child(3) { background: var(--yellow); }
-    .bubble {
-      background: white;
-      border: 2px solid #ffd1e2;
-      border-radius: 22px;
-      padding: 12px 14px;
-      font-weight: 800;
-      display: inline-block;
-    }
-    .modebox {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .modebox label {
-      background: #fff;
-      border: 2px solid #f2d7e3;
-      border-radius: 18px;
-      padding: 12px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      font-weight: 700;
-    }
-    details summary { cursor: pointer; font-weight: 800; }
-    textarea {
-      width: 100%;
-      min-height: 160px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 14px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 12px;
-      box-sizing: border-box;
-    }
-    @media (max-width: 650px) {
-      .hero { grid-template-columns: 1fr; }
-      h1 { font-size: 25px; }
-      button.choice, button.preview { min-width: 78px; min-height: 62px; font-size: 26px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YURI Phonics Land</title>
+<style>
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff7fb;color:#2b2528}.wrap{max-width:900px;margin:auto;padding:16px}.screen{display:none}.screen.active{display:block}.card{background:#fff;border:2px solid #ffd4e5;border-radius:26px;padding:20px;margin-bottom:16px;box-shadow:0 10px 24px #0001}h1{font-size:30px;margin:0 0 8px}h2{margin:0 0 12px}.center{text-align:center}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.space{justify-content:space-between}button,select{font-size:18px;border:0;border-radius:16px;padding:12px 16px;cursor:pointer;box-shadow:0 3px 0 #0001}button{background:#ece4ff}.primary{background:#ff7aa8;color:white;font-weight:800}.soft{background:#fff1bd}.back{background:#eee}.homegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.mode{border-radius:28px;padding:22px;min-height:190px;cursor:pointer}.review{background:#e0f2ff}.quiz{background:#ffd8e8}.icon{font-size:60px}.mascot{font-size:50px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:12px;margin-top:14px}.grid button{min-height:72px;font-size:30px;font-weight:900;background:#f4efff;border:2px solid #ddd1ff}.grid button.correct{background:#dcf7df}.grid button.wrong{background:#ffe1e1}.big{font-size:58px;font-weight:900;text-align:center;padding:12px}.bubble{display:inline-block;background:#fff;border:2px solid #ffd1e2;border-radius:20px;padding:10px 14px;font-weight:800}.status{font-size:22px;font-weight:800;min-height:34px;text-align:center}.score{font-weight:800}.small{font-size:14px;color:#746a70}textarea{width:100%;min-height:150px;border-radius:12px;padding:10px}#loading{position:fixed;inset:0;z-index:99;background:#555b;display:grid;place-items:center}.loadbox{background:#fff;border-radius:26px;padding:28px;text-align:center;width:min(420px,92vw)}.spin{width:58px;height:58px;border:7px solid #ffe1ee;border-top-color:#ff7aa8;border-radius:50%;margin:auto;animation:spin .9s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.hidden{display:none!important}@media(max-width:600px){.grid{grid-template-columns:repeat(3,1fr)}h1{font-size:25px}}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="card hero">
-      <div>
-        <h1>YURI Learning - Kawaii Phonics Quiz</h1>
-        <p>聽原片音軌，揀返正確兩字母合音。音軌已固定使用 <code>assets/phonics_audio.mp3</code>，不用再手動 upload MP3。</p>
-        <div class="row">
-          <select id="rowSelect"></select>
-          <button class="primary" id="startBtn">開始隨機考我</button>
-          <button class="soft" id="testAudioBtn">測試播放</button>
-        </div>
-        <div class="modebox">
-          <label><input type="radio" name="quizMode" value="row" checked /> 只考目前這一行</label>
-          <label><input type="radio" name="quizMode" value="all" /> 全部已設定音節隨機考</label>
-        </div>
-        <div class="notice" id="audioNotice">檢查音軌中……</div>
-      </div>
-      <div>
-        <div class="mascot-row" aria-label="original kawaii mascots">
-          <div class="mascot">🐰</div>
-          <div class="mascot">🐱</div>
-          <div class="mascot">🐻</div>
-        </div>
-        <p class="small center">原創可愛小動物主題，不使用官方角色圖像。</p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>先試聽每個音</h2>
-      <p class="small">揀一行後，撳下面音節可試聽。這區用來檢查時間位是否正確。</p>
-      <div class="row center" id="previewButtons"></div>
-    </section>
-
-    <section class="card">
-      <h2>聽音，揀返正確兩字母</h2>
-      <div class="big" id="question">?</div>
-      <p class="center"><span class="bubble" id="mascotMessage">小兔會讀一個音，請你幫佢搵返答案！</span></p>
-      <div class="row center" style="margin:14px 0;">
-        <button id="playBtn">再聽一次</button>
-        <button id="slowBtn">慢速聽</button>
-        <button id="showBtn">顯示答案</button>
-        <button id="nextBtn">下一題</button>
-      </div>
-      <div class="row center" id="choices"></div>
-      <p class="status" id="status"></p>
-      <p class="score center" id="score">分數：0 / 0 ⭐ 連續答啱：0</p>
-    </section>
-
-    <section class="card">
-      <details>
-        <summary>進階：Clips 時間設定</summary>
-        <p class="small">格式：每個音節是 [開始秒數, 完結秒數]。如某粒音仍然 cut 錯，可在這裏微調。</p>
-        <textarea id="configBox"></textarea>
-        <div class="row" style="margin-top:10px;">
-          <button id="applyConfigBtn">套用設定</button>
-          <button id="resetConfigBtn">還原預設</button>
-        </div>
-      </details>
-    </section>
-  </main>
-
-  <audio id="audio" preload="auto" src="assets/phonics_audio.mp3"></audio>
-  <script src="clips-config.js"></script>
-  <script>
-    const audio = document.getElementById('audio');
-    const rowSelect = document.getElementById('rowSelect');
-    const choices = document.getElementById('choices');
-    const previewButtons = document.getElementById('previewButtons');
-    const statusEl = document.getElementById('status');
-    const scoreEl = document.getElementById('score');
-    const questionEl = document.getElementById('question');
-    const configBox = document.getElementById('configBox');
-    const audioNotice = document.getElementById('audioNotice');
-    const mascotMessage = document.getElementById('mascotMessage');
-
-    let config = JSON.parse(JSON.stringify(window.PHONICS_CLIPS || {}));
-    let answer = null;
-    let answerRow = null;
-    let score = 0;
-    let total = 0;
-    let streak = 0;
-    let stopTimer = null;
-
-    const praise = [
-      '好叻呀！小兔幫你加一粒星 ⭐',
-      '答啱！小貓話你聽得好清楚 🐱',
-      'Excellent！小熊都拍手 🐻',
-      'Good job！再嚟一題！'
-    ];
-
-    function setNotice(message) { audioNotice.textContent = message; }
-    function getQuizMode() { return document.querySelector('input[name="quizMode"]:checked').value; }
-
-    audio.addEventListener('canplaythrough', () => setNotice('音軌已載入，可以直接開始。'));
-    audio.addEventListener('error', () => setNotice('未能載入 assets/phonics_audio.mp3。請檢查 GitHub 入面是否已有 phonics-game/assets/phonics_audio.mp3。'));
-
-    function renderConfig() {
-      configBox.value = JSON.stringify(config, null, 2);
-      rowSelect.innerHTML = '';
-      Object.keys(config).forEach(rowName => {
-        const opt = document.createElement('option');
-        opt.value = rowName;
-        opt.textContent = rowName + '：' + Object.keys(config[rowName]).join(' ');
-        rowSelect.appendChild(opt);
-      });
-      renderPreviewButtons();
-    }
-
-    function getItems(rowName = rowSelect.value) {
-      return Object.keys(config[rowName] || {});
-    }
-
-    function getAllItems() {
-      const all = [];
-      Object.keys(config).forEach(rowName => {
-        Object.keys(config[rowName]).forEach(item => all.push({ rowName, item }));
-      });
-      return all;
-    }
-
-    function renderPreviewButtons() {
-      previewButtons.innerHTML = '';
-      getItems().forEach(item => {
-        const btn = document.createElement('button');
-        btn.className = 'preview';
-        btn.textContent = item;
-        btn.onclick = () => {
-          questionEl.textContent = item;
-          statusEl.textContent = '試聽：' + item;
-          mascotMessage.textContent = '而家試聽 ' + item + '。';
-          playClip(item, rowSelect.value);
-        };
-        previewButtons.appendChild(btn);
-      });
-    }
-
-    function playClip(name, rowName = answerRow || rowSelect.value, rate = 1) {
-      const clip = config[rowName]?.[name];
-      if (!clip) return;
-      const [start, end] = clip;
-      clearTimeout(stopTimer);
-      audio.pause();
-      audio.playbackRate = rate;
-      audio.currentTime = start;
-      const promise = audio.play();
-      if (promise) promise.catch(() => setNotice('瀏覽器阻止自動播放，請先按「測試播放」或「再聽一次」。'));
-      stopTimer = setTimeout(() => {
-        audio.pause();
-        audio.playbackRate = 1;
-      }, Math.max(100, (end - start) * 1000 / rate));
-    }
-
-    function makeChoices(correct, rowName) {
-      let pool = getQuizMode() === 'all' ? getAllItems().map(x => x.item) : getItems(rowName);
-      pool = [...new Set(pool)].filter(x => x !== correct);
-      const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, Math.min(4, pool.length));
-      return [...shuffled, correct].sort(() => Math.random() - 0.5);
-    }
-
-    function nextQuestion() {
-      const mode = getQuizMode();
-      if (mode === 'all') {
-        const all = getAllItems();
-        const picked = all[Math.floor(Math.random() * all.length)];
-        answer = picked.item;
-        answerRow = picked.rowName;
-        rowSelect.value = answerRow;
-        renderPreviewButtons();
-      } else {
-        answerRow = rowSelect.value;
-        const items = getItems(answerRow);
-        answer = items[Math.floor(Math.random() * items.length)];
-      }
-
-      questionEl.textContent = '🎧';
-      statusEl.textContent = '';
-      mascotMessage.textContent = '聽清楚，今題係邊個音？';
-      choices.innerHTML = '';
-
-      makeChoices(answer, answerRow).forEach(item => {
-        const btn = document.createElement('button');
-        btn.className = 'choice';
-        btn.textContent = item;
-        btn.onclick = () => checkAnswer(item, btn);
-        choices.appendChild(btn);
-      });
-      playClip(answer, answerRow);
-    }
-
-    function updateScore() {
-      scoreEl.textContent = `分數：${score} / ${total} ⭐ 連續答啱：${streak}`;
-    }
-
-    function checkAnswer(item, btn) {
-      total++;
-      if (item === answer) {
-        score++;
-        streak++;
-        btn.classList.add('correct');
-        questionEl.textContent = answer;
-        statusEl.textContent = '答啱！' + answer;
-        mascotMessage.textContent = praise[Math.floor(Math.random() * praise.length)];
-        setTimeout(nextQuestion, 950);
-      } else {
-        streak = 0;
-        btn.classList.add('wrong');
-        statusEl.textContent = '差少少，再聽一次。';
-        mascotMessage.textContent = '唔緊要，小耳朵再聽多次。';
-        playClip(answer, answerRow);
-      }
-      updateScore();
-    }
-
-    rowSelect.addEventListener('change', renderPreviewButtons);
-    document.querySelectorAll('input[name="quizMode"]').forEach(radio => radio.addEventListener('change', () => {
-      mascotMessage.textContent = getQuizMode() === 'all' ? '全部音節隨機考，挑戰開始！' : '先專心練目前這一行。';
-    }));
-    document.getElementById('startBtn').onclick = nextQuestion;
-    document.getElementById('nextBtn').onclick = nextQuestion;
-    document.getElementById('testAudioBtn').onclick = () => { const first = getItems()[0]; if (first) playClip(first, rowSelect.value); };
-    document.getElementById('playBtn').onclick = () => answer && playClip(answer, answerRow);
-    document.getElementById('slowBtn').onclick = () => answer && playClip(answer, answerRow, 0.75);
-    document.getElementById('showBtn').onclick = () => { if (answer) { questionEl.textContent = answer; statusEl.textContent = '答案：' + answer; } };
-    document.getElementById('applyConfigBtn').onclick = () => {
-      try { config = JSON.parse(configBox.value); renderConfig(); statusEl.textContent = '已套用設定。'; }
-      catch (e) { statusEl.textContent = '設定格式有問題，請檢查 JSON。'; }
-    };
-    document.getElementById('resetConfigBtn').onclick = () => { config = JSON.parse(JSON.stringify(window.PHONICS_CLIPS || {})); renderConfig(); };
-
-    renderConfig();
-  </script>
+<div id="loading"><div class="loadbox"><div class="spin"></div><h2>正在準備音軌...</h2><p id="loadText">小兔正在打開聲音盒，請等一等。</p><button id="retryBtn" class="primary" style="display:none">重新載入音軌</button></div></div>
+<main class="wrap">
+<section id="home" class="screen active"><div class="card center"><h1>YURI Phonics Land</h1><p>聽一聽，認一認，揀返正確兩字母合音。</p><div class="mascot">🐰 🐱 🐻</div><p class="small">音軌已放在 <code>assets/phonics_audio.mp3</code>，不用再 upload。</p><div class="homegrid"><div id="toReview" class="mode review"><div class="icon">📖</div><h2>重溫一下</h2><p>揀一行，再逐個音節聽。</p></div><div id="toQuiz" class="mode quiz"><div class="icon">🎧</div><h2>考一考我</h2><p>全部音節 random 出題。</p></div></div></div><div class="card"><details><summary>家長設定：時間表</summary><textarea id="configBox"></textarea><div class="row"><button id="applyConfig">套用設定</button><button id="resetConfig">還原預設</button></div><p class="small" id="audioNotice">音軌狀態檢查中。</p></details></div></section>
+<section id="reviewScreen" class="screen"><div class="card"><div class="row space"><button id="reviewBack" class="back">← 返回主頁</button><h2>📖 重溫一下</h2></div><p class="small">揀一行，再撳音節試聽。重溫模式不計分。</p><div class="row"><select id="reviewRow"></select><button id="playFirst" class="soft">播放第一個音</button></div><div id="reviewGrid" class="grid"></div><p id="reviewStatus" class="status"></p></div></section>
+<section id="quizScreen" class="screen"><div class="card"><div class="row space"><button id="quizBack" class="back">← 返回主頁</button><h2>🎧 考一考我</h2></div><p class="center"><span id="msg" class="bubble">聽清楚，今題係邊個音？</span></p><div id="question" class="big">🎧</div><div class="row center"><button id="replay">再聽一次</button><button id="slow">慢速聽</button><button id="showAns">顯示答案</button><button id="next" class="soft">下一題</button></div><div id="choices" class="grid"></div><p id="status" class="status"></p><p id="score" class="score center">分數：0 / 0 ⭐ 連續答啱：0</p></div></section>
+</main>
+<audio id="audio" preload="auto" src="assets/phonics_audio.mp3"></audio>
+<script src="clips-config.js"></script>
+<script>
+const audio=document.getElementById('audio'),loading=document.getElementById('loading'),loadText=document.getElementById('loadText'),retryBtn=document.getElementById('retryBtn');
+const screens=[home,reviewScreen,quizScreen],reviewRow=document.getElementById('reviewRow'),reviewGrid=document.getElementById('reviewGrid'),reviewStatus=document.getElementById('reviewStatus'),choices=document.getElementById('choices'),question=document.getElementById('question'),statusEl=document.getElementById('status'),scoreEl=document.getElementById('score'),msg=document.getElementById('msg'),configBox=document.getElementById('configBox'),audioNotice=document.getElementById('audioNotice');
+let config=JSON.parse(JSON.stringify(window.PHONICS_CLIPS||{})),answer=null,answerRow=null,score=0,total=0,streak=0,timer=null,ready=false;
+const praise=['好叻呀！⭐','答啱！你聽得好清楚 🐱','Excellent！小熊拍手 🐻','Good job！再嚟一題！'];
+function show(s){screens.forEach(x=>x.classList.remove('active'));s.classList.add('active');scrollTo(0,0)}
+function rows(){return Object.keys(config)}function items(r){return Object.keys(config[r]||{})}function all(){let a=[];rows().forEach(r=>items(r).forEach(i=>a.push({row:r,item:i})));return a}
+function readyAudio(){if(ready)return;ready=true;loading.classList.add('hidden');audioNotice.textContent='音軌已載入，可以播放。'}
+function audioErr(t){loadText.textContent=t;retryBtn.style.display='inline-block';audioNotice.textContent=t}
+audio.addEventListener('loadeddata',readyAudio);audio.addEventListener('canplaythrough',readyAudio);audio.addEventListener('error',()=>audioErr('未能載入 assets/phonics_audio.mp3，請檢查 assets folder。'));
+setTimeout(()=>{if(!ready)audioErr('音軌載入較慢，可以等多一陣或重新載入。')},12000);retryBtn.onclick=()=>{retryBtn.style.display='none';loadText.textContent='正在重新載入音軌...';audio.load()};
+function render(){configBox.value=JSON.stringify(config,null,2);reviewRow.innerHTML='';rows().forEach(r=>{let o=document.createElement('option');o.value=r;o.textContent=r+'：'+items(r).join(' ');reviewRow.appendChild(o)});renderReview()}
+function renderReview(){let r=reviewRow.value||rows()[0];reviewGrid.innerHTML='';items(r).forEach(i=>{let b=document.createElement('button');b.textContent=i;b.onclick=()=>{reviewStatus.textContent='試聽：'+i;play(i,r)};reviewGrid.appendChild(b)})}
+function play(name,row,rate=1){let c=config[row]?.[name];if(!c)return;let[start,end]=c;clearTimeout(timer);audio.pause();audio.playbackRate=rate;audio.currentTime=start;let p=audio.play();if(p)p.catch(()=>audioNotice.textContent='請再按一次播放按鈕。');timer=setTimeout(()=>{audio.pause();audio.playbackRate=1},Math.max(100,(end-start)*1000/rate))}
+function makeChoices(correct){let pool=[...new Set(all().map(x=>x.item))].filter(x=>x!==correct).sort(()=>Math.random()-.5).slice(0,4);return[...pool,correct].sort(()=>Math.random()-.5)}
+function nextQ(){let a=all()[Math.floor(Math.random()*all().length)];answer=a.item;answerRow=a.row;question.textContent='🎧';statusEl.textContent='';msg.textContent='聽清楚，今題係邊個音？';choices.innerHTML='';makeChoices(answer).forEach(i=>{let b=document.createElement('button');b.textContent=i;b.onclick=()=>check(i,b);choices.appendChild(b)});play(answer,answerRow)}
+function scoreText(){scoreEl.textContent=`分數：${score} / ${total} ⭐ 連續答啱：${streak}`}
+function check(i,b){total++;if(i===answer){score++;streak++;b.classList.add('correct');question.textContent=answer;statusEl.textContent='答啱！'+answer;msg.textContent=praise[Math.floor(Math.random()*praise.length)];setTimeout(nextQ,950)}else{streak=0;b.classList.add('wrong');statusEl.textContent='差少少，再聽一次。';msg.textContent='唔緊要，小耳朵再聽多次。';play(answer,answerRow)}scoreText()}
+function startQuiz(){score=total=streak=0;scoreText();show(quizScreen);nextQ()}
+toReview.onclick=()=>show(reviewScreen);toQuiz.onclick=startQuiz;reviewBack.onclick=()=>show(home);quizBack.onclick=()=>show(home);reviewRow.onchange=renderReview;playFirst.onclick=()=>{let r=reviewRow.value,i=items(r)[0];if(i)play(i,r)};replay.onclick=()=>answer&&play(answer,answerRow);slow.onclick=()=>answer&&play(answer,answerRow,.75);showAns.onclick=()=>{if(answer){question.textContent=answer;statusEl.textContent='答案：'+answer}};next.onclick=nextQ;applyConfig.onclick=()=>{try{config=JSON.parse(configBox.value);render();audioNotice.textContent='已套用設定。'}catch(e){audioNotice.textContent='設定格式有問題。'}};resetConfig.onclick=()=>{config=JSON.parse(JSON.stringify(window.PHONICS_CLIPS||{}));render()};
+render();audio.load();
+</script>
 </body>
 </html>
