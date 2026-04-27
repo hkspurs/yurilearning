@@ -14,13 +14,13 @@ body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",
 <section id="reviewScreen" class="screen"><div class="card"><div class="row space"><button id="reviewBack" class="back">← 返回主頁</button><h2>📖 重溫一下</h2></div><p class="small">揀一行，再撳音節試聽。重溫模式不計分。</p><div class="row"><select id="reviewRow"></select><button id="playFirst" class="soft">播放第一個音</button></div><div id="reviewGrid" class="grid"></div><p id="reviewStatus" class="status"></p></div></section>
 <section id="quizScreen" class="screen"><div class="card"><div class="row space"><button id="quizBack" class="back">← 返回主頁</button><h2>🎧 考一考我</h2></div><p class="center"><span id="msg" class="bubble">每題會出10個相似音選擇，最多試3次。</span></p><div id="question" class="big">🎧</div><div class="row center"><button id="replay">再聽一次</button><button id="slow">慢速聽</button><button id="showAns">顯示答案</button><button id="next" class="soft">下一題</button></div><div id="choices" class="grid"></div><p id="status" class="status"></p><p id="score" class="score center">第 0 / 20 題｜分數：0｜本題機會：3 / 3</p></div></section>
 </main>
-<script src="clips-config.js"></script>
+<script src="clips-config.js?v=18"></script>
 <script>
 const loading=document.getElementById('loading'),loadText=document.getElementById('loadText'),unlockBtn=document.getElementById('unlockBtn'),spin=document.getElementById('spin');
 const screens=[home,reviewScreen,quizScreen],reviewRow=document.getElementById('reviewRow'),reviewGrid=document.getElementById('reviewGrid'),reviewStatus=document.getElementById('reviewStatus'),choices=document.getElementById('choices'),question=document.getElementById('question'),statusEl=document.getElementById('status'),scoreEl=document.getElementById('score'),msg=document.getElementById('msg'),configBox=document.getElementById('configBox'),audioNotice=document.getElementById('audioNotice'),nextBtn=document.getElementById('next');
 let config=JSON.parse(JSON.stringify(window.PHONICS_CLIPS||{})),answer=null,answerRow=null,score=0,streak=0,qNo=0,tries=0,questionDone=false,quizDone=false,quizDeck=[];
 let ctx=null,audioBuffer=null,currentSource=null,unlocked=false;
-const AUDIO_URL='assets/phonics_audio.mp3?v=17',QUIZ_SIZE=20,OPTION_COUNT=10,MAX_TRIES=3;
+const AUDIO_URL='assets/phonics_audio.mp3?v=18',QUIZ_SIZE=20,OPTION_COUNT=10,MAX_TRIES=3;
 const VOWELS=['A','E','I','O','U'];
 const CONFUSE={B:['P','D','M'],P:['B','T','F'],D:['T','B','G'],T:['D','P','K'],G:['K','D','J'],K:['G','C','Q'],C:['K','G','S'],F:['V','B','P'],V:['F','W','B'],S:['Z','C','T'],Z:['S','J','V'],L:['R','N','Y'],R:['L','W','Y'],M:['N','B','W'],N:['M','L','D'],H:['F','W','Y'],J:['G','Z','D'],Q:['K','C','G'],W:['Y','V','R'],X:['S','Z','K'],Y:['W','R','L']};
 const praise=['好叻呀！⭐','答啱！你聽得好清楚 🐱','Excellent！小熊拍手 🐻','Good job！撳「下一題」繼續！'];
