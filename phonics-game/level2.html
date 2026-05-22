@@ -14,13 +14,13 @@ body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",
 <section id="reviewScreen" class="screen"><div class="card"><div class="row space"><button id="reviewBack" class="back">← 返回主頁</button><h2>📖 Level 2 重溫</h2></div><p class="small">撳音節試聽。</p><div class="row"><select id="reviewRow"></select><button id="playFirst" class="soft">播放第一個音</button></div><div id="reviewGrid" class="grid"></div><p id="reviewStatus" class="status"></p></div></section>
 <section id="quizScreen" class="screen"><div class="card"><div class="row space"><button id="quizBack" class="back">← 返回主頁</button><h2>🎧 Level 2 考一考我</h2></div><p class="center"><span id="msg" class="bubble">聽完 AB–AZ 音，再揀答案。</span></p><div id="question" class="big">🎧</div><div class="row center"><button id="replay">再聽一次</button><button id="slow">慢速聽</button><button id="showAns">顯示答案</button><button id="next" class="soft">下一題</button></div><div id="choices" class="grid"></div><p id="status" class="status"></p><p id="score" class="score center">第 0 / 20 題｜分數：0｜本題機會：3 / 3</p></div></section>
 </main>
-<script src="level2-clips-config.js?v=2"></script>
+<script src="level2-clips-config.js?v=5"></script>
 <script>
 const loading=document.getElementById('loading'),loadText=document.getElementById('loadText'),unlockBtn=document.getElementById('unlockBtn'),spin=document.getElementById('spin');
 const screens=[home,reviewScreen,quizScreen],reviewRow=document.getElementById('reviewRow'),reviewGrid=document.getElementById('reviewGrid'),reviewStatus=document.getElementById('reviewStatus'),choices=document.getElementById('choices'),question=document.getElementById('question'),statusEl=document.getElementById('status'),scoreEl=document.getElementById('score'),msg=document.getElementById('msg'),configBox=document.getElementById('configBox'),audioNotice=document.getElementById('audioNotice'),nextBtn=document.getElementById('next');
 let config=JSON.parse(JSON.stringify(window.PHONICS_LEVEL2_CLIPS||{})),answer=null,answerRow=null,score=0,qNo=0,tries=0,questionDone=false,quizDone=false,quizDeck=[];
 let ctx=null,audioBuffer=null,currentSource=null;
-const AUDIO_URL='assets/phonics_level2_ab_az.mp3?v=2',QUIZ_SIZE=20,OPTION_COUNT=10,MAX_TRIES=3;
+const AUDIO_URL='assets/phonics_level2_ab_az.mp3?v=5',QUIZ_SIZE=20,OPTION_COUNT=10,MAX_TRIES=3;
 const praise=['好叻呀！⭐','答啱！你聽得好清楚 🐰','Excellent！再嚟！','Good job！撳下一題繼續！'];
 function show(s){screens.forEach(x=>x.classList.remove('active'));s.classList.add('active');scrollTo(0,0)}
 function rows(){return Object.keys(config)}function items(r){return Object.keys(config[r]||{})}function all(){let a=[];rows().forEach(r=>items(r).forEach(i=>a.push({row:r,item:i})));return a}function allLabels(){return all().map(x=>x.item)}function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
