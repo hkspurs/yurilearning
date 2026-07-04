@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """Offline speech validation for Brighter phonics clips.
 
-This script cuts each configured clip, runs a local speech engine when available,
-and compares the transcript with the expected phonics label.
+This script cuts each configured clip, runs a local speech engine, and compares
+transcript output with the expected phonics label. No API key is used.
 
-Supported engines, in order:
-1. faster-whisper Python package
-2. openai-whisper Python package
-3. whisper.cpp command line binary via WHISPER_CPP_BIN and WHISPER_CPP_MODEL
-
-No API key is used.
+Local model modes:
+- faster-whisper with --model-path /models/faster-whisper/base.en
+- faster-whisper with --model base.en, when model is already cached locally
+- openai-whisper with --model base.en, when model is already cached locally
+- whisper.cpp with --engine whispercpp --whisper-cpp-bin ... --whisper-cpp-model ...
 """
 from __future__ import annotations
 
@@ -28,16 +27,11 @@ from typing import Dict, List, Optional, Tuple
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "phonics-game"
 CONFIG = GAME / "level2-clips-config.js"
-MANIFEST = GAME / "audio_manifest.json"
 REPORT = GAME / "audio_speech_qa_report.json"
 
 
 def strip_query(value: str) -> str:
     return str(value).split("?", 1)[0]
-
-
-def load_config_text() -> str:
-    return CONFIG.read_text(encoding="utf-8")
 
 
 def parse_level2_config(text: str) -> List[Dict[str, object]]:
@@ -50,17 +44,35 @@ def parse_level2_config(text: str) -> List[Dict[str, object]]:
     for m in row_re.finditer(text):
         clips = []
         for c in clip_re.finditer(m.group("body")):
-            clips.append({
-                "label": c.group("label"),
-                "start": float(c.group("start")),
-                "end": float(c.group("end")),
-            })
+            clips.append({"label": c.group("label"), "start": float(c.group("start")), "end": float(c.group("end"))})
         rows.append({"row": m.group("row"), "audio": strip_query(m.group("audio")), "clips": clips})
     return rows
 
 
 def normalize_text(text: str) -> str:
-    return re.sub(r"[^A-Z]", "", text.upper())
+    words = text.upper()
+    replacements = {
+        " EH ": " A ",
+        " EYE ": " I ",
+        " WHY ": " Y ",
+        " YOU ": " U ",
+        " SEE ": " C ",
+        " SEA ": " C ",
+        " BEE ": " B ",
+        " BE ": " B ",
+        " ARE ": " R ",
+        " JAY ": " J ",
+        " KAY ": " K ",
+        " CUE ": " Q ",
+        " QUEUE ": " Q ",
+        " EX ": " X ",
+        " ZED ": " Z ",
+        " ZEE ": " Z ",
+    }
+    words = " " + re.sub(r"[^A-Z]+", " ", words).strip() + " "
+    for src, dst in replacements.items():
+        words = words.replace(src, dst)
+    return re.sub(r"[^A-Z]", "", words)
 
 
 def expected_variants(label: str) -> List[str]:
@@ -77,7 +89,7 @@ def compare_transcript(label: str, transcript: str) -> Tuple[str, str]:
         return "pass", "target appears in transcript"
     if not norm:
         return "review_required", "empty transcript"
-    return "review_required", f"transcript does not clearly match {target}"
+    return "review_required", f"transcript '{transcript}' normalized to '{norm}', expected '{target}'"
 
 
 def run(cmd: List[str]) -> subprocess.CompletedProcess:
@@ -86,11 +98,7 @@ def run(cmd: List[str]) -> subprocess.CompletedProcess:
 
 def cut_clip(src: Path, start: float, end: float, out: Path) -> None:
     duration = max(0.1, end - start)
-    cmd = [
-        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-        "-ss", f"{start:.3f}", "-t", f"{duration:.3f}",
-        "-i", str(src), "-ar", "16000", "-ac", "1", str(out),
-    ]
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{start:.3f}", "-t", f"{duration:.3f}", "-i", str(src), "-ar", "16000", "-ac", "1", str(out)]
     result = run(cmd)
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or "ffmpeg failed")
@@ -99,6 +107,7 @@ def cut_clip(src: Path, start: float, end: float, out: Path) -> None:
 class SpeechEngine:
     name = "none"
     available = False
+    init_error = "no engine selected"
 
     def transcribe(self, wav: Path) -> Tuple[str, Optional[float]]:
         return "", None
@@ -107,13 +116,17 @@ class SpeechEngine:
 class FasterWhisperEngine(SpeechEngine):
     name = "faster-whisper"
 
-    def __init__(self, model_name: str):
+    def __init__(self, model_name_or_path: str, local_only: bool):
         from faster_whisper import WhisperModel
-        self.model = WhisperModel(model_name, device="cpu", compute_type="int8")
+        kwargs = {"device": "cpu", "compute_type": "int8"}
+        if local_only:
+            kwargs["local_files_only"] = True
+        self.model = WhisperModel(model_name_or_path, **kwargs)
         self.available = True
+        self.init_error = ""
 
     def transcribe(self, wav: Path) -> Tuple[str, Optional[float]]:
-        segments, info = self.model.transcribe(str(wav), language="en", beam_size=5, vad_filter=False)
+        segments, _ = self.model.transcribe(str(wav), language="en", beam_size=5, vad_filter=False, condition_on_previous_text=False)
         texts, probs = [], []
         for s in segments:
             texts.append(s.text.strip())
@@ -126,13 +139,14 @@ class FasterWhisperEngine(SpeechEngine):
 class OpenAIWhisperEngine(SpeechEngine):
     name = "openai-whisper"
 
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, download_root: Optional[str]):
         import whisper
-        self.model = whisper.load_model(model_name)
+        self.model = whisper.load_model(model_name, download_root=download_root)
         self.available = True
+        self.init_error = ""
 
     def transcribe(self, wav: Path) -> Tuple[str, Optional[float]]:
-        result = self.model.transcribe(str(wav), language="en", fp16=False)
+        result = self.model.transcribe(str(wav), language="en", fp16=False, condition_on_previous_text=False)
         return str(result.get("text", "")).strip(), None
 
 
@@ -143,6 +157,7 @@ class WhisperCppEngine(SpeechEngine):
         self.binary = binary
         self.model = model
         self.available = True
+        self.init_error = ""
 
     def transcribe(self, wav: Path) -> Tuple[str, Optional[float]]:
         out_base = str(wav.with_suffix(""))
@@ -154,46 +169,63 @@ class WhisperCppEngine(SpeechEngine):
         return (result.stdout or result.stderr).strip(), None
 
 
-def pick_engine(model_name: str) -> SpeechEngine:
-    if importlib.util.find_spec("faster_whisper") is not None:
-        return FasterWhisperEngine(model_name)
-    if importlib.util.find_spec("whisper") is not None:
-        return OpenAIWhisperEngine(model_name)
-    cpp_bin = os.environ.get("WHISPER_CPP_BIN")
-    cpp_model = os.environ.get("WHISPER_CPP_MODEL")
-    if cpp_bin and cpp_model and Path(cpp_bin).exists() and Path(cpp_model).exists():
-        return WhisperCppEngine(cpp_bin, cpp_model)
-    return SpeechEngine()
+def pick_engine(args: argparse.Namespace) -> SpeechEngine:
+    engine = SpeechEngine()
+    engine.init_error = "No local speech engine available. Install faster-whisper, openai-whisper, or provide whisper.cpp binary/model."
+    model_ref = args.model_path or args.model
+
+    if args.engine in ("auto", "faster-whisper") and importlib.util.find_spec("faster_whisper") is not None:
+        try:
+            return FasterWhisperEngine(model_ref, local_only=args.local_files_only)
+        except Exception as exc:
+            if args.engine == "faster-whisper":
+                engine.init_error = f"faster-whisper model unavailable: {exc}"
+                return engine
+
+    if args.engine in ("auto", "openai-whisper") and importlib.util.find_spec("whisper") is not None:
+        try:
+            return OpenAIWhisperEngine(args.model, args.model_path)
+        except Exception as exc:
+            if args.engine == "openai-whisper":
+                engine.init_error = f"openai-whisper model unavailable: {exc}"
+                return engine
+
+    cpp_bin = args.whisper_cpp_bin or os.environ.get("WHISPER_CPP_BIN")
+    cpp_model = args.whisper_cpp_model or os.environ.get("WHISPER_CPP_MODEL")
+    if args.engine in ("auto", "whispercpp"):
+        if cpp_bin and cpp_model and Path(cpp_bin).exists() and Path(cpp_model).exists():
+            return WhisperCppEngine(cpp_bin, cpp_model)
+        if args.engine == "whispercpp":
+            engine.init_error = "whisper.cpp selected but binary/model path is missing or invalid"
+    return engine
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="base.en")
+    parser.add_argument("--engine", choices=["auto", "faster-whisper", "openai-whisper", "whispercpp"], default="auto")
+    parser.add_argument("--model", default="base.en", help="model name, or faster-whisper model id when no --model-path")
+    parser.add_argument("--model-path", default=None, help="local faster-whisper model directory, or openai-whisper download root")
+    parser.add_argument("--local-files-only", action="store_true", help="do not download model files; use local cache/model only")
+    parser.add_argument("--whisper-cpp-bin", default=None)
+    parser.add_argument("--whisper-cpp-model", default=None)
     parser.add_argument("--limit", type=int, default=0, help="limit clips for quick test")
     parser.add_argument("--output", default=str(REPORT))
     args = parser.parse_args()
 
-    rows = parse_level2_config(load_config_text())
+    rows = parse_level2_config(CONFIG.read_text(encoding="utf-8"))
     if not rows:
         print("No rows parsed from level2 config", file=sys.stderr)
         return 2
 
     if shutil.which("ffmpeg") is None:
-        report = {
-            "speechEngineAvailable": False,
-            "error": "ffmpeg is required to cut clips before speech recognition",
-            "items": [],
-        }
+        report = {"summary": {"totalClips": 0, "pass": 0, "reviewRequired": 0, "fail": 1, "speechEngine": "none", "speechEngineAvailable": False}, "error": "ffmpeg is required", "items": []}
         Path(args.output).write_text(json.dumps(report, indent=2), encoding="utf-8")
         print(json.dumps(report, indent=2))
         return 1
 
-    engine = pick_engine(args.model)
+    engine = pick_engine(args)
     results = []
-    total = 0
-    pass_count = 0
-    review_count = 0
-    fail_count = 0
+    total = pass_count = review_count = fail_count = 0
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
@@ -204,7 +236,7 @@ def main() -> int:
                     break
                 total += 1
                 label = str(clip["label"])
-                wav = tmp / f"{label}.wav"
+                wav = tmp / f"{str(row['row'])[0]}_{label}.wav"
                 item = {
                     "id": f"{str(row['row'])[0].lower()}_{label.lower()}",
                     "row": row["row"],
@@ -229,7 +261,7 @@ def main() -> int:
                 try:
                     cut_clip(src, float(clip["start"]), float(clip["end"]), wav)
                     if not engine.available:
-                        item["qaNotes"].append("no local speech engine available; install faster-whisper or whisper.cpp")
+                        item["qaNotes"].append(engine.init_error)
                         review_count += 1
                     else:
                         text, conf = engine.transcribe(wav)
@@ -258,6 +290,7 @@ def main() -> int:
             "fail": fail_count,
             "speechEngine": engine.name,
             "speechEngineAvailable": engine.available,
+            "engineInitError": "" if engine.available else engine.init_error,
         },
         "items": results,
     }
