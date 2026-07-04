@@ -34,6 +34,12 @@
       </div>
       <h2 id="selectedLevelTitle">Level</h2>
       <p id="selectedLevelText"></p>
+      <div class="row controls">
+        <label for="quizRowFilter">功課 Row：</label>
+        <select id="quizRowFilter" aria-label="選擇功課 quiz row">
+          <option value="all">All</option>
+        </select>
+      </div>
       <div class="mode-grid">
         <button id="reviewMode" class="big-btn secondary" type="button">📖 重溫一下</button>
         <button id="quizMode" class="big-btn" type="button">🎧 開始20題功課</button>
@@ -63,12 +69,6 @@
         <span id="progressText" class="pill">第 0 / 20 題</span>
       </div>
       <h2 id="quizTitle" class="sr-only">20題 phonics quiz</h2>
-      <div class="row controls">
-        <label for="quizRowFilter">Quiz Row：</label>
-        <select id="quizRowFilter" aria-label="選擇 quiz row filter">
-          <option value="all">All</option>
-        </select>
-      </div>
       <div class="progress"><div id="progressFill" class="progress-fill"></div></div>
       <div class="stats">
         <div id="scoreText" class="stat">分數 0</div>
