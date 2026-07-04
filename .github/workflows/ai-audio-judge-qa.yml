@@ -1,0 +1,70 @@
+name: AI Audio Judge QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Audio-capable OpenAI model"
+        required: true
+        default: "gpt-4o-audio-preview"
+        type: string
+      limit:
+        description: "Limit clips for quick test. Use 0 for all clips."
+        required: true
+        default: "10"
+        type: string
+      choice_radius:
+        description: "0 = full row choices. 3 = nearby labels only."
+        required: true
+        default: "0"
+        type: string
+
+jobs:
+  ai-audio-judge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Check OpenAI API key
+        run: |
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "OPENAI_API_KEY GitHub Secret is missing."
+            echo "Set it in: Settings > Secrets and variables > Actions > New repository secret"
+            exit 1
+          fi
+      - name: Run AI forced-choice audio judge
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          ARGS="--model ${{ inputs.model }} --choice-radius ${{ inputs.choice_radius }} --output phonics-game/ai_audio_judge_report.json --summary-output phonics-game/ai_audio_judge_summary.md"
+          if [ "${{ inputs.limit }}" != "0" ]; then
+            ARGS="$ARGS --limit ${{ inputs.limit }}"
+          fi
+          python scripts/ai-audio-judge-qa.py $ARGS
+      - name: Print AI judge summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('phonics-game/ai_audio_judge_report.json')
+          if p.exists(): print(json.dumps(json.loads(p.read_text()).get('summary',{}), indent=2))
+          md=pathlib.Path('phonics-game/ai_audio_judge_summary.md')
+          if md.exists(): print(md.read_text()[:4000])
+          PY
+      - name: Upload AI audio judge reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-audio-judge-qa-report
+          path: |
+            phonics-game/ai_audio_judge_report.json
+            phonics-game/ai_audio_judge_summary.md
