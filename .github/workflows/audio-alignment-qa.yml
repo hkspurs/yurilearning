@@ -1,0 +1,91 @@
+name: Audio Alignment QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Whisper model for optional speech score"
+        required: true
+        default: "base.en"
+        type: choice
+        options:
+          - tiny.en
+          - base.en
+          - small.en
+      limit:
+        description: "Limit clips for quick test. Use 0 for all clips."
+        required: true
+        default: "0"
+        type: string
+      use_speech:
+        description: "Use Whisper speech score as advisory signal"
+        required: true
+        default: true
+        type: boolean
+      search_window:
+        description: "Seconds before/after current start to search"
+        required: true
+        default: "1.0"
+        type: string
+      step:
+        description: "Sliding window step in seconds"
+        required: true
+        default: "0.15"
+        type: string
+
+jobs:
+  alignment-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-whisper-align-${{ runner.os }}-${{ inputs.model }}
+          restore-keys: |
+            hf-whisper-align-${{ runner.os }}-
+            hf-whisper-${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-audio-qa.txt
+      - name: Run audio alignment QA
+        run: |
+          ARGS="--model ${{ inputs.model }} --search-window ${{ inputs.search_window }} --step ${{ inputs.step }} --output phonics-game/audio_alignment_report.json --summary-output phonics-game/audio_alignment_summary.md --suggested-config phonics-game/level2-clips-config.suggested.js"
+          if [ "${{ inputs.limit }}" != "0" ]; then
+            ARGS="$ARGS --limit ${{ inputs.limit }}"
+          fi
+          if [ "${{ inputs.use_speech }}" = "true" ]; then
+            ARGS="$ARGS --use-speech"
+          fi
+          python scripts/audio-align-qa.py $ARGS
+      - name: Print alignment summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('phonics-game/audio_alignment_report.json')
+          if p.exists(): print(json.dumps(json.loads(p.read_text()).get('summary',{}), indent=2))
+          md=pathlib.Path('phonics-game/audio_alignment_summary.md')
+          if md.exists(): print(md.read_text()[:4000])
+          PY
+      - name: Upload alignment reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-alignment-qa-report
+          path: |
+            phonics-game/audio_alignment_report.json
+            phonics-game/audio_alignment_summary.md
+            phonics-game/level2-clips-config.suggested.js
