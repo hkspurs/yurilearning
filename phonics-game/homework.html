@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>YURI Phonics Homework Game</title>
+  <link rel="stylesheet" href="css/homework-game.css?v=1">
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div>
+      <div class="brand">YURI Phonics Homework</div>
+      <div class="small">5–7歲｜聽聲音，揀正確 phonics</div>
+    </div>
+    <div class="pill">📱 GitHub Pages Ready</div>
+  </header>
+
+  <section id="startScreen" class="screen active">
+    <div class="card hero">
+      <div class="hero-emoji">🐰 🎧 🔤</div>
+      <h1>今日 Phonics 功課</h1>
+      <p>先重溫，再做20題。每題可以試3次。</p>
+      <p class="small">這頁是純靜態 HTML/CSS/JavaScript，適合放在 GitHub Pages。</p>
+    </div>
+    <div id="levelGrid" class="level-grid"></div>
+  </section>
+
+  <section id="learnScreen" class="screen">
+    <div class="card">
+      <div class="row space">
+        <button id="backToStart" class="big-btn quiet">← 揀 Level</button>
+        <span class="pill">重溫 / 功課</span>
+      </div>
+      <h2 id="selectedLevelTitle">Level</h2>
+      <p id="selectedLevelText"></p>
+      <div class="mode-grid">
+        <button id="reviewMode" class="big-btn secondary">📖 重溫一下</button>
+        <button id="quizMode" class="big-btn">🎧 開始20題功課</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row space">
+        <h2>📖 重溫音節</h2>
+        <button id="playFirstReview" class="big-btn secondary">播放第一個</button>
+      </div>
+      <div class="row">
+        <label for="reviewRow">選擇 Row：</label>
+        <select id="reviewRow"></select>
+      </div>
+      <div id="reviewGrid" class="choice-grid"></div>
+      <p id="audioStatus" class="small">等待播放。</p>
+    </div>
+  </section>
+
+  <section id="quizScreen" class="screen">
+    <div class="card">
+      <div class="row space">
+        <button id="restartBtn" class="big-btn quiet">← 返回重溫</button>
+        <span id="progressText" class="pill">第 0 / 20 題</span>
+      </div>
+      <div class="progress"><div id="progressFill" class="progress-fill"></div></div>
+      <div class="stats">
+        <div id="scoreText" class="stat">分數 0</div>
+        <div id="triesText" class="stat">機會 3/3</div>
+        <div class="stat">最多20題</div>
+      </div>
+      <p class="center"><span id="quizMsg" class="bubble">先撳「聽一聽」，再揀答案。</span></p>
+      <div id="questionLabel" class="question-mark">🎧</div>
+      <div class="row center">
+        <button id="playQuestion" class="big-btn">聽一聽</button>
+        <button id="slowQuestion" class="big-btn secondary">慢速聽</button>
+        <button id="nextQuestion" class="big-btn secondary">下一題</button>
+      </div>
+      <div id="choices" class="choice-grid"></div>
+      <p id="feedback" class="status"></p>
+    </div>
+  </section>
+
+  <section id="resultScreen" class="screen">
+    <div class="card hero">
+      <div class="hero-emoji">🎉 ⭐ 🐻</div>
+      <h1>功課完成！</h1>
+      <div id="finalScore" class="final-score">0 / 20</div>
+      <p id="resultNote"></p>
+      <div class="row center">
+        <button id="againBtn" class="big-btn">再做20題</button>
+        <button id="homeBtn" class="big-btn secondary">返回主頁</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="card">
+    <details>
+      <summary>家長 / 老師提示</summary>
+      <p>如音檔未上載或 iOS Safari 阻止播放，遊戲會嘗試用電腦聲音讀出字母作 fallback。正式練習仍建議使用老師音軌。</p>
+      <p>舊版仍保留：<a href="./index.html?v=18">Level 1 舊版</a>｜<a href="./level2.html?v=6">Level 2 舊版</a></p>
+    </details>
+  </div>
+</main>
+<script src="clips-config.js?v=18"></script>
+<script src="level2-clips-config.js?v=6"></script>
+<script src="js/homework-game.js?v=1"></script>
+</body>
+</html>
