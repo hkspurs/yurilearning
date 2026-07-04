@@ -1,1 +1,7 @@
-PLACEHOLDER_ACTUAL
+{
+  "schemaVersion": "1.0",
+  "project": "YURI Brighter Phonics Train",
+  "generatedBy": "Audio Data QA Agent",
+  "description": "Clip-level phonics metadata seed. scripts/audio-speech-qa.py can auto-generate default clip metadata from level2-clips-config.js when items is empty. Add human-reviewed overrides here when needed.",
+  "items": []
+}
