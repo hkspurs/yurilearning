@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "project": "YURI Brighter Phonics Train",
+  "generatedBy": "Audio Data QA Agent",
+  "items": [
+    {
+      "id": "brighter_a_row",
+      "file": "assets/brighter-a.mp3",
+      "expectedText": "A row",
+      "expectedPhoneme": "/a/",
+      "type": "phonics_row_audio",
+      "relatedLetter": "A",
+      "relatedWord": null,
+      "row": "A row - AB to AZ",
+      "clipLabels": ["AB", "AC", "AD", "AF", "AG", "AH", "AJ", "AK", "AL", "AM", "AN", "AP", "AQ", "AR", "AS", "AT", "AV", "AW", "AX", "AY", "AZ"],
+      "clipCount": 21,
+      "qaStatus": "review_required",
+      "qaNotes": ["Referenced by level2-clips-config.js.", "Clip timings are in level2-clips-config.js.", "Human listening review is required to confirm every clip label matches the spoken sound."]
+    },
+    {
+      "id": "brighter_e_row",
+      "file": "assets/brighter-e.mp3",
+      "expectedText": "E row",
+      "expectedPhoneme": "/e/",
+      "type": "phonics_row_audio",
+      "relatedLetter": "E",
+      "relatedWord": null,
+      "row": "E row - EB to EZ",
+      "clipLabels": ["EB", "EC", "ED", "EF", "EG", "EH", "EJ", "EK", "EL", "EM", "EN", "EP", "EQ", "ER", "ES", "ET", "EV", "EW", "EX", "EY", "EZ"],
+      "clipCount": 21,
+      "qaStatus": "review_required",
+      "qaNotes": ["Referenced by level2-clips-config.js.", "Clip timings are in level2-clips-config.js.", "Human listening review is required to confirm every clip label matches the spoken sound."]
+    },
+    {
+      "id": "brighter_i_row",
+      "file": "assets/brighter-i.mp3",
+      "expectedText": "I row",
+      "expectedPhoneme": "/i/",
+      "type": "phonics_row_audio",
+      "relatedLetter": "I",
+      "relatedWord": null,
+      "row": "I row - IB to IZ",
+      "clipLabels": ["IB", "IC", "ID", "IF", "IG", "IH", "IJ", "IK", "IL", "IM", "IN", "IP", "IQ", "IR", "IS", "IT", "IV", "IW", "IX", "IY", "IZ"],
+      "clipCount": 21,
+      "qaStatus": "review_required",
+      "qaNotes": ["Referenced by level2-clips-config.js.", "Clip timings are in level2-clips-config.js.", "Human listening review is required to confirm every clip label matches the spoken sound."]
+    },
+    {
+      "id": "brighter_o_row",
+      "file": "assets/brighter-o.mp3",
+      "expectedText": "O row",
+      "expectedPhoneme": "/o/",
+      "type": "phonics_row_audio",
+      "relatedLetter": "O",
+      "relatedWord": null,
+      "row": "O row - OB to OZ",
+      "clipLabels": ["OB", "OC", "OD", "OF", "OG", "OH", "OJ", "OK", "OL", "OM", "ON", "OP", "OQ", "OR", "OS", "OT", "OV", "OW", "OX", "OY", "OZ"],
+      "clipCount": 21,
+      "qaStatus": "review_required",
+      "qaNotes": ["Referenced by level2-clips-config.js.", "Clip timings are in level2-clips-config.js.", "Human listening review is required to confirm every clip label matches the spoken sound."]
+    },
+    {
+      "id": "brighter_u_row",
+      "file": "assets/brighter-u.mp3",
+      "expectedText": "U row",
+      "expectedPhoneme": "/u/",
+      "type": "phonics_row_audio",
+      "relatedLetter": "U",
+      "relatedWord": null,
+      "row": "U row - UB to UZ",
+      "clipLabels": ["UB", "UC", "UD", "UF", "UG", "UH", "UJ", "UK", "UL", "UM", "UN", "UP", "UQ", "UR", "US", "UT", "UV", "UW", "UX", "UY", "UZ"],
+      "clipCount": 21,
+      "qaStatus": "review_required",
+      "qaNotes": ["Referenced by level2-clips-config.js.", "Clip timings are in level2-clips-config.js.", "Human listening review is required to confirm every clip label matches the spoken sound."]
+    }
+  ]
+}
