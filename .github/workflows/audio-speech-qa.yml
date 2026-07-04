@@ -22,21 +22,17 @@ jobs:
   speech-qa:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install ffmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-
       - name: Cache Hugging Face models
         uses: actions/cache@v4
         with:
@@ -44,37 +40,28 @@ jobs:
           key: hf-whisper-${{ runner.os }}-${{ inputs.model }}
           restore-keys: |
             hf-whisper-${{ runner.os }}-
-
       - name: Install speech QA dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-audio-qa.txt
-
       - name: Run audio manifest QA
         run: |
           node scripts/audio-qa.js > phonics-game/audio_manifest_qa_report.json
-
-      - name: Run speech recognition QA
+      - name: Run phonics-aware speech QA
         run: |
           if [ "${{ inputs.limit }}" = "0" ]; then
-            python scripts/audio-speech-qa.py --engine faster-whisper --model "${{ inputs.model }}" --output phonics-game/audio_speech_qa_report.json
+            python scripts/audio-speech-qa.py --engine faster-whisper --model "${{ inputs.model }}" --output phonics-game/audio_speech_qa_report.json --summary-output phonics-game/audio_speech_qa_summary.md
           else
-            python scripts/audio-speech-qa.py --engine faster-whisper --model "${{ inputs.model }}" --limit "${{ inputs.limit }}" --output phonics-game/audio_speech_qa_report.json
+            python scripts/audio-speech-qa.py --engine faster-whisper --model "${{ inputs.model }}" --limit "${{ inputs.limit }}" --output phonics-game/audio_speech_qa_report.json --summary-output phonics-game/audio_speech_qa_summary.md
           fi
-
       - name: Print speech QA summary
         if: always()
         run: |
           python - <<'PY'
           import json, pathlib
           p=pathlib.Path('phonics-game/audio_speech_qa_report.json')
-          if p.exists():
-              data=json.loads(p.read_text())
-              print(json.dumps(data.get('summary',{}), indent=2))
-          else:
-              print('audio_speech_qa_report.json not found')
+          if p.exists(): print(json.dumps(json.loads(p.read_text()).get('summary',{}), indent=2))
           PY
-
       - name: Upload QA reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,3 +70,4 @@ jobs:
           path: |
             phonics-game/audio_manifest_qa_report.json
             phonics-game/audio_speech_qa_report.json
+            phonics-game/audio_speech_qa_summary.md
