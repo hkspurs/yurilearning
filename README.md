@@ -23,10 +23,12 @@ U: UB UC UD UF UG UH UJ UK UL UM UN UP UQ UR US UT UV UW UX UY UZ
 ## Game flow
 
 ```text
-Start -> Review -> Follow Row / Tap Cell -> 20-question Quiz -> Result
+Start -> Station Review -> Follow Row / Tap Carriage -> 5/10/20-question Train Practice -> Result
 ```
 
-The quiz gives 20 questions. Each question allows 3 tries. Teacher audio is used first. If audio cannot play, the page falls back to browser speech.
+Default practice is 5 questions with 4 choices. Homework mode is 10 questions with 6 choices. Challenge mode is 20 questions with 8 choices. Each question allows 3 tries.
+
+Teacher audio is used first. If audio cannot play, the page falls back to browser speech.
 
 ## Important files
 
@@ -36,54 +38,70 @@ phonics-game/js/homework-game.js
 phonics-game/css/homework-game.css
 phonics-game/clips-config.js
 phonics-game/level2-clips-config.js
+phonics-game/audio_manifest.json
 phonics-game/assets/
+scripts/audio-qa.js
 AGENTS.md
 SKILL.md
 ```
 
-## Adding new audio rows
+## Audio QA workflow
 
-`phonics-game/level2-clips-config.js` supports per-row audio files:
+Run from the repository root:
 
-```js
-window.PHONICS_LEVEL2_CLIPS = {
-  "A row - AB to AZ": {
-    audio: "assets/phonics_level2_ab_az.mp3?v=7",
-    clips: {
-      "AB": [6.090, 6.570],
-      "AC": [9.050, 9.550]
-    }
-  }
-};
+```bash
+node scripts/audio-qa.js
 ```
 
-Each clip timing is `[startSecond, endSecond]`.
+The script reads `phonics-game/audio_manifest.json`, `phonics-game/level2-clips-config.js`, and `phonics-game/assets/`.
 
-Recommended asset names for the extra Brighter videos:
+It reports missing audio, unused audio, duplicate audio ids, filename/letter mismatches, missing phoneme metadata, manifest/config clip mismatches, and items marked `review_required`.
+
+If `ffprobe` is installed, it also reports basic duration and can catch zero-duration files.
+
+## Adding new phonics audio
+
+1. Put the audio file under `phonics-game/assets/`.
+2. Add the row and timings in `phonics-game/level2-clips-config.js`.
+3. Add the same file to `phonics-game/audio_manifest.json`.
+4. Keep the manifest file path query-string free, for example `assets/brighter-a.mp3`.
+5. Fill in `id`, `file`, `expectedText`, `expectedPhoneme`, `type`, `relatedLetter`, `relatedWord`, `qaStatus`, and `qaNotes`.
+6. If the spoken sound has not been confirmed by human listening or speech recognition, keep `qaStatus` as `review_required`.
+
+## Meaning of review_required
+
+`review_required` means the audio is traceable and referenced correctly, but the actual spoken phonics content still needs human listening review.
+
+Do not mark an item as pass just because the MP3 exists. Mark it pass only after confirming the expected row or label is correct, the timing does not cut off the sound, volume is acceptable, and no wrong phonics sound is inside the clip.
+
+## QA report example
 
 ```text
-phonics-game/assets/brighter-e.mp4
-phonics-game/assets/brighter-i.mp4
-phonics-game/assets/brighter-o.mp4
-phonics-game/assets/brighter-u.mp4
+summary:
+  manifestItems: 5
+  gameReferencedAudioFiles: 5
+  gameReferencedRows: 5
+  errors: 0
+  warnings: 0
+  reviewRequired: 5
 ```
-
-The config already includes E/I/O/U rows. If the audio files are not present yet, the game will try browser speech fallback.
 
 ## Manual test checklist
 
 ```text
 [ ] Open phonics-game/homework.html directly
-[ ] Select Brighter Vowel Rows
-[ ] Review A/E/I/O/U rows
-[ ] Tap first and last cell in each row
+[ ] Select Brighter Phonics Train
+[ ] Review A/E/I/O/U stations
+[ ] Tap first, middle, and last carriage in each row
+[ ] Confirm each sound matches the visible label
 [ ] Follow Row highlights and plays in order
 [ ] Stop button cancels Follow Row
-[ ] Start 20-question quiz
-[ ] Use All / A / E / I / O / U row filter
+[ ] Start 5-question practice
+[ ] Try 10-question homework and 20-question challenge
+[ ] Use All / A / E / I / O / U station filter
 [ ] Correct answer increases score
 [ ] Wrong answer reduces tries
-[ ] Result appears after 20 questions
+[ ] Result appears after the session finishes
 [ ] Missing audio does not crash the game
 [ ] Mobile/iPad layout remains usable
 ```
