@@ -3,62 +3,71 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>YURI Phonics Homework Game</title>
-  <link rel="stylesheet" href="css/homework-game.css?v=1">
+  <title>YURI Brighter Phonics Homework Game</title>
+  <link rel="stylesheet" href="css/homework-game.css?v=2">
 </head>
 <body>
 <main class="app">
   <header class="topbar">
     <div>
-      <div class="brand">YURI Phonics Homework</div>
+      <div class="brand">YURI Brighter Phonics</div>
       <div class="small">5–7歲｜聽聲音，揀正確 phonics</div>
     </div>
     <div class="pill">📱 GitHub Pages Ready</div>
   </header>
 
-  <section id="startScreen" class="screen active">
+  <section id="startScreen" class="screen active" aria-labelledby="startTitle">
     <div class="card hero">
-      <div class="hero-emoji">🐰 🎧 🔤</div>
-      <h1>今日 Phonics 功課</h1>
+      <div class="hero-emoji" aria-hidden="true">🐰 🎧 🔤</div>
+      <h1 id="startTitle">今日 Brighter Phonics 功課</h1>
       <p>先重溫，再做20題。每題可以試3次。</p>
-      <p class="small">這頁是純靜態 HTML/CSS/JavaScript，適合放在 GitHub Pages。</p>
+      <p class="small">重點：A/E/I/O/U vowel rows，例如 AB、EB、IB、OB、UB。</p>
     </div>
-    <div id="levelGrid" class="level-grid"></div>
+    <div id="levelGrid" class="level-grid" aria-label="選擇 phonics level"></div>
   </section>
 
-  <section id="learnScreen" class="screen">
+  <section id="learnScreen" class="screen" aria-labelledby="selectedLevelTitle">
     <div class="card">
       <div class="row space">
-        <button id="backToStart" class="big-btn quiet">← 揀 Level</button>
+        <button id="backToStart" class="big-btn quiet" type="button">← 揀 Level</button>
         <span class="pill">重溫 / 功課</span>
       </div>
       <h2 id="selectedLevelTitle">Level</h2>
       <p id="selectedLevelText"></p>
       <div class="mode-grid">
-        <button id="reviewMode" class="big-btn secondary">📖 重溫一下</button>
-        <button id="quizMode" class="big-btn">🎧 開始20題功課</button>
+        <button id="reviewMode" class="big-btn secondary" type="button">📖 重溫一下</button>
+        <button id="quizMode" class="big-btn" type="button">🎧 開始20題功課</button>
       </div>
     </div>
 
     <div class="card">
       <div class="row space">
         <h2>📖 重溫音節</h2>
-        <button id="playFirstReview" class="big-btn secondary">播放第一個</button>
+        <button id="playFirstReview" class="big-btn secondary" type="button">播放第一個</button>
       </div>
-      <div class="row">
+      <div class="row controls">
         <label for="reviewRow">選擇 Row：</label>
-        <select id="reviewRow"></select>
+        <select id="reviewRow" aria-label="選擇重溫 row"></select>
+        <button id="followRow" class="big-btn secondary" type="button">▶ 跟住讀成行</button>
+        <button id="stopFollowRow" class="big-btn quiet" type="button">停止</button>
       </div>
-      <div id="reviewGrid" class="choice-grid"></div>
-      <p id="audioStatus" class="small">等待播放。</p>
+      <div id="reviewGrid" class="choice-grid" aria-label="重溫音節列表"></div>
+      <p id="audioStatus" class="small" aria-live="polite">等待播放。</p>
     </div>
   </section>
 
-  <section id="quizScreen" class="screen">
+  <section id="quizScreen" class="screen" aria-labelledby="quizTitle">
     <div class="card">
       <div class="row space">
-        <button id="restartBtn" class="big-btn quiet">← 返回重溫</button>
+        <button id="restartBtn" class="big-btn quiet" type="button">← 返回重溫</button>
         <span id="progressText" class="pill">第 0 / 20 題</span>
+      </div>
+      <h2 id="quizTitle" class="sr-only">20題 phonics quiz</h2>
+      <div class="row controls">
+        <label for="quizRowFilter">Quiz Row：</label>
+        <select id="quizRowFilter" aria-label="選擇 quiz row filter">
+          <option value="all">All</option>
+        </select>
       </div>
       <div class="progress"><div id="progressFill" class="progress-fill"></div></div>
       <div class="stats">
@@ -66,27 +75,27 @@
         <div id="triesText" class="stat">機會 3/3</div>
         <div class="stat">最多20題</div>
       </div>
-      <p class="center"><span id="quizMsg" class="bubble">先撳「聽一聽」，再揀答案。</span></p>
-      <div id="questionLabel" class="question-mark">🎧</div>
+      <p class="center"><span id="quizMsg" class="bubble" aria-live="polite">先撳「聽一聽」，再揀答案。</span></p>
+      <div id="questionLabel" class="question-mark" aria-live="polite">🎧</div>
       <div class="row center">
-        <button id="playQuestion" class="big-btn">聽一聽</button>
-        <button id="slowQuestion" class="big-btn secondary">慢速聽</button>
-        <button id="nextQuestion" class="big-btn secondary">下一題</button>
+        <button id="playQuestion" class="big-btn" type="button">聽一聽</button>
+        <button id="slowQuestion" class="big-btn secondary" type="button">慢速聽</button>
+        <button id="nextQuestion" class="big-btn secondary" type="button">下一題</button>
       </div>
-      <div id="choices" class="choice-grid"></div>
-      <p id="feedback" class="status"></p>
+      <div id="choices" class="choice-grid" aria-label="答案選項"></div>
+      <p id="feedback" class="status" aria-live="polite"></p>
     </div>
   </section>
 
-  <section id="resultScreen" class="screen">
+  <section id="resultScreen" class="screen" aria-labelledby="resultTitle">
     <div class="card hero">
-      <div class="hero-emoji">🎉 ⭐ 🐻</div>
-      <h1>功課完成！</h1>
+      <div class="hero-emoji" aria-hidden="true">🎉 ⭐ 🐻</div>
+      <h1 id="resultTitle">功課完成！</h1>
       <div id="finalScore" class="final-score">0 / 20</div>
       <p id="resultNote"></p>
       <div class="row center">
-        <button id="againBtn" class="big-btn">再做20題</button>
-        <button id="homeBtn" class="big-btn secondary">返回主頁</button>
+        <button id="againBtn" class="big-btn" type="button">再做20題</button>
+        <button id="homeBtn" class="big-btn secondary" type="button">返回主頁</button>
       </div>
     </div>
   </section>
@@ -100,7 +109,7 @@
   </div>
 </main>
 <script src="clips-config.js?v=18"></script>
-<script src="level2-clips-config.js?v=6"></script>
-<script src="js/homework-game.js?v=1"></script>
+<script src="level2-clips-config.js?v=8"></script>
+<script src="js/homework-game.js?v=2"></script>
 </body>
 </html>
