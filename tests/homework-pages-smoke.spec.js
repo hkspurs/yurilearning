@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 const HOMEWORK_URL = process.env.HOMEWORK_URL || 'https://hkspurs.github.io/yurilearning/phonics-game/homework.html?v=gggeeeggu';
+const AUDIO_STATUS_OK = /播放\s*(車卡|sound ticket)|音檔未能播放/;
 
 function isIgnorableRequestFailure(url, failure) {
   const isMedia = /\.(mp3|mp4|wav|m4a)(\?|$)/i.test(url);
@@ -50,7 +51,7 @@ test.describe('YURI Brighter Phonics Train homework page', () => {
       await page.selectOption('#reviewRow', { label: row });
       await expect(page.locator('#reviewGrid .answer-btn')).toHaveCount(21);
       await page.locator('#reviewGrid .answer-btn').first().click();
-      await expect(page.locator('#audioStatus')).toContainText(/播放車卡|音檔未能播放/);
+      await expect(page.locator('#audioStatus')).toContainText(AUDIO_STATUS_OK);
     }
 
     const configCheck = await page.evaluate(() => {
@@ -84,7 +85,7 @@ test.describe('YURI Brighter Phonics Train homework page', () => {
     await expect(page.locator('#progressText')).toContainText('第 1 / 5 站');
     await expect(page.locator('#choices .answer-btn')).toHaveCount(4);
     await page.locator('#playQuestion').click();
-    await expect(page.locator('#audioStatus')).toContainText(/播放車卡|音檔未能播放/);
+    await expect(page.locator('#audioStatus')).toContainText(AUDIO_STATUS_OK);
 
     for (let i = 0; i < 5; i++) {
       const choiceCount = await page.locator('#choices .answer-btn').count();
