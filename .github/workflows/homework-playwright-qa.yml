@@ -1,0 +1,33 @@
+name: Homework Playwright QA
+
+on:
+  push:
+    paths:
+      - 'phonics-game/**'
+      - 'tests/homework-pages-smoke.spec.js'
+      - '.github/workflows/homework-playwright-qa.yml'
+  workflow_dispatch:
+    inputs:
+      homework_url:
+        description: Homework page URL
+        required: true
+        default: https://hkspurs.github.io/yurilearning/phonics-game/homework.html?v=gggeeeggu
+
+jobs:
+  homework-playwright-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install --save-dev @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Run homework QA
+        env:
+          HOMEWORK_URL: ${{ github.event.inputs.homework_url || 'https://hkspurs.github.io/yurilearning/phonics-game/homework.html?v=gggeeeggu' }}
+        run: npx playwright test tests/homework-pages-smoke.spec.js --project=chromium --reporter=list
