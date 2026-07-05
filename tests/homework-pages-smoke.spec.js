@@ -2,15 +2,26 @@ const { test, expect } = require('@playwright/test');
 
 const HOMEWORK_URL = process.env.HOMEWORK_URL || 'https://hkspurs.github.io/yurilearning/phonics-game/homework.html?v=gggeeeggu';
 
+function isIgnorableRequestFailure(url, failure) {
+  const isMedia = /\.(mp3|mp4|wav|m4a)(\?|$)/i.test(url);
+  return isMedia && /ERR_ABORTED/i.test(failure);
+}
+
 test.describe('YURI Brighter Phonics Train homework page', () => {
   test('Level 2 loads, all stations render, review and quiz flow work', async ({ page }) => {
     const failedRequests = [];
+    const ignoredMediaCancels = [];
     const consoleErrors = [];
 
     page.on('requestfailed', request => {
       const url = request.url();
       const failure = request.failure()?.errorText || 'unknown';
-      if (!url.startsWith('data:')) failedRequests.push(`${url} => ${failure}`);
+      if (url.startsWith('data:')) return;
+      if (isIgnorableRequestFailure(url, failure)) {
+        ignoredMediaCancels.push(`${url} => ${failure}`);
+        return;
+      }
+      failedRequests.push(`${url} => ${failure}`);
     });
 
     page.on('console', message => {
@@ -84,6 +95,9 @@ test.describe('YURI Brighter Phonics Train homework page', () => {
     await expect(page.locator('#resultScreen')).toHaveClass(/active/);
     await expect(page.locator('#finalScore')).toContainText('/ 5');
 
+    if (ignoredMediaCancels.length) {
+      console.log(`Ignored ${ignoredMediaCancels.length} normal media request cancellations.`);
+    }
     expect(consoleErrors).toEqual([]);
     expect(failedRequests).toEqual([]);
   });
