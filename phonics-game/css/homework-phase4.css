@@ -1,0 +1,48 @@
+.station-node.active{
+  background:linear-gradient(180deg,#fffde8,var(--station-yellow));
+  border-color:#ffb000;
+  color:var(--ticket-ink);
+  transform:translateY(-2px) scale(1.08);
+  box-shadow:0 0 0 4px #ffe28a,0 7px 0 #00000022;
+}
+
+.station-node[aria-current="step"]::after{
+  content:"🚂";
+  position:absolute;
+  margin-top:54px;
+  font-size:18px;
+}
+
+.journey-stop.done{
+  background:linear-gradient(180deg,#eaffea,var(--station-green));
+  border-color:#2d9b55;
+}
+
+.journey-stop.done::after{
+  content:"✓";
+  color:#176b32;
+  font-size:15px;
+}
+
+.journey-stop.current{
+  background:linear-gradient(180deg,#fffde8,var(--station-yellow));
+  border-color:#ffb000;
+  box-shadow:0 0 0 4px #ffe28a;
+}
+
+.train-journey:has(.journey-stop.done) .train-engine{
+  transform:translateY(-1px);
+}
+
+@media(max-width:620px){
+  .station-node[aria-current="step"]::after{
+    margin-top:46px;
+    font-size:15px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .station-node.active,.train-journey:has(.journey-stop.done) .train-engine{
+    transform:none;
+  }
+}
