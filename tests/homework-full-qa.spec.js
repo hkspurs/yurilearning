@@ -34,6 +34,32 @@ function extractPlayedLabel(status) {
   return null;
 }
 
+async function installStableMediaMock(page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+      configurable: true,
+      value() {
+        this.dispatchEvent(new Event('play'));
+        return Promise.resolve();
+      },
+    });
+    Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
+      configurable: true,
+      value() {
+        this.dispatchEvent(new Event('pause'));
+      },
+    });
+    window.speechSynthesis = {
+      cancel() {},
+      speak() {},
+      getVoices() { return []; },
+      paused: false,
+      pending: false,
+      speaking: false,
+    };
+  });
+}
+
 async function clickButtonByExactLabel(container, label) {
   const index = await container.locator('.answer-btn').evaluateAll((buttons, target) => {
     return buttons.findIndex(button => (button.firstChild?.textContent || button.textContent || '').trim() === target);
@@ -74,6 +100,7 @@ async function collectRuntime(page) {
 }
 
 async function enterLevel2(page) {
+  await installStableMediaMock(page);
   await page.goto(HOMEWORK_URL, { waitUntil: 'networkidle' });
   await expect(page.locator('.brand')).toContainText('YURI Brighter Phonics Train');
   await expect(page.locator('.level-card')).toHaveCount(2);
