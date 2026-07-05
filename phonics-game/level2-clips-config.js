@@ -2,7 +2,7 @@ window.PHONICS_LEVEL2_CLIPS = {
   "A row - AB to AZ": {
     audio: "assets/brighter-a.mp3?v=2",
     clips: {
-      "AB": [5.539, 6.173],
+      "AB": [5.189, 6.523],
       "AC": [8.237, 9.446],
       "AD": [11.331, 12.356],
       "AF": [14.706, 15.772],
