@@ -15,8 +15,31 @@ function isIgnorableRequestFailure(url, failure) {
   return isMedia && /ERR_ABORTED/i.test(failure);
 }
 
-function labelRegex(labels) {
-  return new RegExp(`\\b(${labels.join('|')})\\b`);
+function escapeRegExp(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractPlayedLabel(status) {
+  const text = String(status || '');
+  const patterns = [
+    /sound ticket\s+([A-Z]{2})/i,
+    /播放車卡\s+([A-Z]{2})/i,
+    /電腦聲音：\s*([A-Z]{2})/i,
+    /火車讀緊：\s*([A-Z]{2})/i,
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[1].toUpperCase();
+  }
+  return null;
+}
+
+async function clickButtonByExactLabel(container, label) {
+  const index = await container.locator('.answer-btn').evaluateAll((buttons, target) => {
+    return buttons.findIndex(button => (button.firstChild?.textContent || button.textContent || '').trim() === target);
+  }, label);
+  expect(index, `Cannot find exact answer button label: ${label}`).toBeGreaterThanOrEqual(0);
+  await container.locator('.answer-btn').nth(index).click();
 }
 
 async function collectRuntime(page) {
@@ -128,12 +151,13 @@ test.describe('YURI homework full QA - distrust everything', () => {
       await expect(page.locator('#stationRoute .station-node.active')).toContainText(rowKey);
       await expect(page.locator('#reviewGrid .answer-btn')).toHaveCount(21);
 
-      const renderedLabels = await page.locator('#reviewGrid .answer-btn').evaluateAll(buttons => buttons.map(b => b.firstChild.textContent.trim()));
+      const grid = page.locator('#reviewGrid');
+      const renderedLabels = await grid.locator('.answer-btn').evaluateAll(buttons => buttons.map(b => b.firstChild.textContent.trim()));
       expect(renderedLabels).toEqual(labels);
 
       for (const label of [labels[0], labels[10], labels[20]]) {
-        await page.locator('#reviewGrid .answer-btn').filter({ hasText: label }).click();
-        await expect(page.locator('#audioStatus')).toContainText(new RegExp(`(播放.*${label}|音檔未能播放.*${label})`));
+        await clickButtonByExactLabel(grid, label);
+        await expect(page.locator('#audioStatus')).toContainText(new RegExp(`(sound ticket\\s+${escapeRegExp(label)}|播放車卡\\s+${escapeRegExp(label)}|電腦聲音：\\s*${escapeRegExp(label)})`, 'i'));
       }
     }
 
@@ -148,7 +172,6 @@ test.describe('YURI homework full QA - distrust everything', () => {
     const runtime = await collectRuntime(page);
     await enterLevel2(page);
 
-    const aLabels = EXPECTED_ROWS.A;
     await page.selectOption('#quizRowFilter', 'A');
     await page.locator('#quizMode').click();
     await expect(page.locator('#progressText')).toContainText('第 1 / 5 站');
@@ -157,22 +180,24 @@ test.describe('YURI homework full QA - distrust everything', () => {
 
     // First question: deliberately answer wrong first, then correct.
     await page.locator('#playQuestion').click();
-    await expect(page.locator('#audioStatus')).toContainText(/播放|音檔未能播放/);
+    await expect(page.locator('#audioStatus')).toContainText(/播放|sound ticket|音檔未能播放/);
     const firstAudioStatus = await page.locator('#audioStatus').textContent();
-    const firstCorrect = firstAudioStatus.match(labelRegex(aLabels))?.[1];
+    const firstCorrect = extractPlayedLabel(firstAudioStatus);
     expect(firstCorrect, `Cannot extract correct label from audioStatus: ${firstAudioStatus}`).toBeTruthy();
+    expect(EXPECTED_ROWS.A).toContain(firstCorrect);
 
-    const firstChoiceLabels = await page.locator('#choices .answer-btn').evaluateAll(buttons => buttons.map(b => b.firstChild.textContent.trim()));
+    const choiceContainer = page.locator('#choices');
+    const firstChoiceLabels = await choiceContainer.locator('.answer-btn').evaluateAll(buttons => buttons.map(b => b.firstChild.textContent.trim()));
     expect(firstChoiceLabels).toContain(firstCorrect);
     const wrong = firstChoiceLabels.find(label => label !== firstCorrect);
     expect(wrong).toBeTruthy();
 
-    await page.locator('#choices .answer-btn').filter({ hasText: wrong }).click();
+    await clickButtonByExactLabel(choiceContainer, wrong);
     await expect(page.locator('#feedback')).toContainText(/差少少|再聽一次/);
     await expect(page.locator('#triesText')).toContainText('機會 2/3');
     await expect(page.locator('#scoreText')).toContainText('星星 0');
 
-    await page.locator('#choices .answer-btn').filter({ hasText: firstCorrect }).click();
+    await clickButtonByExactLabel(choiceContainer, firstCorrect);
     await expect(page.locator('#feedback')).toContainText(/好嘢|火車行前一步/);
     await expect(page.locator('#scoreText')).toContainText('星星 1');
     await expect(page.locator('#questionLabel')).toContainText(firstCorrect);
@@ -180,17 +205,18 @@ test.describe('YURI homework full QA - distrust everything', () => {
 
     await page.locator('#nextQuestion').click();
 
-    // Remaining 4 questions: use audioStatus as source of truth, click the exact matching answer.
+    // Remaining 4 questions: use the explicit audioStatus label as source of truth.
     for (let expectedQuestion = 2; expectedQuestion <= 5; expectedQuestion++) {
       await expect(page.locator('#progressText')).toContainText(`第 ${expectedQuestion} / 5 站`);
       await page.locator('#playQuestion').click();
-      await expect(page.locator('#audioStatus')).toContainText(/播放|音檔未能播放/);
+      await expect(page.locator('#audioStatus')).toContainText(/播放|sound ticket|音檔未能播放/);
       const status = await page.locator('#audioStatus').textContent();
-      const correct = status.match(labelRegex(aLabels))?.[1];
+      const correct = extractPlayedLabel(status);
       expect(correct, `Cannot extract correct label from audioStatus: ${status}`).toBeTruthy();
+      expect(EXPECTED_ROWS.A).toContain(correct);
       const choices = await page.locator('#choices .answer-btn').evaluateAll(buttons => buttons.map(b => b.firstChild.textContent.trim()));
       expect(choices).toContain(correct);
-      await page.locator('#choices .answer-btn').filter({ hasText: correct }).click();
+      await clickButtonByExactLabel(page.locator('#choices'), correct);
       await expect(page.locator('#feedback')).toContainText(/好嘢|火車行前一步/);
       await expect(page.locator('#trainJourney .journey-stop.done')).toHaveCount(expectedQuestion);
       await page.locator('#nextQuestion').click();
