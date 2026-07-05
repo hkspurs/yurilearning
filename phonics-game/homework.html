@@ -11,7 +11,7 @@
   <header class="topbar">
     <div>
       <div class="brand">YURI Brighter Phonics Train</div>
-      <div class="small">5–7歲｜聽聲音，揀正確 phonics 車卡</div>
+      <div class="small">5–7歲｜坐火車聽聲音，收集 phonics sound tickets</div>
     </div>
     <div class="pill">🚂 GitHub Pages Ready</div>
   </header>
@@ -19,9 +19,9 @@
   <section id="startScreen" class="screen active" aria-labelledby="startTitle">
     <div class="card hero">
       <div class="hero-emoji" aria-hidden="true">🚂 🎧 🎟️</div>
-      <h1 id="startTitle">今日 Phonics Train 功課</h1>
-      <p>先跟住讀，再坐火車做 5 題小挑戰。</p>
-      <p class="small">重點：A/E/I/O/U stations，例如 AB、EB、IB、OB、UB。</p>
+      <h1 id="startTitle">今日 Phonics Train Journey</h1>
+      <p>先跟住讀，再坐火車做 5 題小挑戰，收集 sound tickets。</p>
+      <p class="small">Brighter Journey：5 Stations｜105 Sound Tickets｜A/E/I/O/U rows</p>
     </div>
     <div id="levelGrid" class="level-grid" aria-label="選擇 phonics level"></div>
   </section>
@@ -30,11 +30,24 @@
     <div class="card">
       <div class="row space">
         <button id="backToStart" class="big-btn quiet" type="button">← 揀 Level</button>
-        <span class="pill">🚉 Station / 功課</span>
+        <span class="pill">🚉 Station / Sound Tickets</span>
       </div>
       <h2 id="selectedLevelTitle">Level</h2>
       <p id="selectedLevelText"></p>
-      <p id="sessionHint" class="small" aria-live="polite">今次旅程：5 題，每題 4 張車卡。</p>
+      <div id="stationRoute" class="station-route" aria-label="Phonics station route" data-phase="html-ready">
+        <span class="station-node" data-station="A">A</span>
+        <span class="track-line" aria-hidden="true">→</span>
+        <span class="station-node" data-station="E">E</span>
+        <span class="track-line" aria-hidden="true">→</span>
+        <span class="station-node" data-station="I">I</span>
+        <span class="track-line" aria-hidden="true">→</span>
+        <span class="station-node" data-station="O">O</span>
+        <span class="track-line" aria-hidden="true">→</span>
+        <span class="station-node" data-station="U">U</span>
+        <span class="track-line" aria-hidden="true">→</span>
+        <span class="station-node finish" data-station="Finish">Finish</span>
+      </div>
+      <p id="sessionHint" class="small" aria-live="polite">今次旅程：5 題，每題 4 張 sound ticket。</p>
       <div class="row controls">
         <label for="quizRowFilter">功課 Station：</label>
         <select id="quizRowFilter" aria-label="選擇功課 station">
@@ -42,15 +55,18 @@
         </select>
       </div>
       <div class="mode-grid">
-        <button id="reviewMode" class="big-btn secondary" type="button">📖 重溫一下</button>
+        <button id="reviewMode" class="big-btn secondary" type="button">📖 重溫 Sound Tickets</button>
         <button id="quizMode" class="big-btn" type="button">🚂 開車做練習</button>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card ticket-board" aria-labelledby="reviewBoardTitle">
       <div class="row space">
-        <h2>📖 Station 重溫</h2>
-        <button id="playFirstReview" class="big-btn secondary" type="button">播放第一張車卡</button>
+        <div>
+          <h2 id="reviewBoardTitle">🎟️ Sound Ticket Board</h2>
+          <p class="small">撳一張 ticket，聽清楚老師聲音。</p>
+        </div>
+        <button id="playFirstReview" class="big-btn secondary" type="button">播放第一張 ticket</button>
       </div>
       <div class="row controls">
         <label for="reviewRow">選擇 Station：</label>
@@ -58,40 +74,50 @@
         <button id="followRow" class="big-btn secondary" type="button">▶ 火車讀成行</button>
         <button id="stopFollowRow" class="big-btn quiet" type="button">停止</button>
       </div>
-      <div id="reviewGrid" class="choice-grid" aria-label="重溫音節車卡"></div>
+      <div id="reviewGrid" class="choice-grid sound-ticket-grid" aria-label="重溫 sound ticket 車卡"></div>
       <p id="audioStatus" class="small" aria-live="polite">等待播放。</p>
     </div>
   </section>
 
   <section id="quizScreen" class="screen" aria-labelledby="quizTitle">
-    <div class="card">
+    <div class="card train-challenge">
       <div class="row space">
         <button id="restartBtn" class="big-btn quiet" type="button">← 返回重溫</button>
         <span id="progressText" class="pill">第 0 / 5 站</span>
       </div>
       <h2 id="quizTitle" class="sr-only">phonics train quiz</h2>
       <div class="progress"><div id="progressFill" class="progress-fill"></div></div>
+      <div id="trainJourney" class="train-journey" aria-label="Train journey progress" data-phase="html-ready">
+        <span class="train-engine" aria-hidden="true">🚂</span>
+        <span class="journey-stop" data-step="1">●</span>
+        <span class="journey-stop" data-step="2">●</span>
+        <span class="journey-stop" data-step="3">●</span>
+        <span class="journey-stop" data-step="4">●</span>
+        <span class="journey-stop" data-step="5">●</span>
+        <span class="finish-flag" aria-hidden="true">🏁</span>
+      </div>
       <div class="stats">
         <div id="scoreText" class="stat">星星 0</div>
         <div id="triesText" class="stat">機會 3/3</div>
-        <div class="stat">小站 / 功課 / 挑戰</div>
+        <div class="stat">Sound Tickets / Stations / Challenge</div>
       </div>
-      <p class="center"><span id="quizMsg" class="bubble" aria-live="polite">聽一聽，揀啱車卡！</span></p>
+      <p class="center"><span id="quizMsg" class="bubble" aria-live="polite">聽一聽，揀啱 sound ticket！</span></p>
       <div id="questionLabel" class="question-mark" aria-live="polite">🚂</div>
       <div class="row center">
         <button id="playQuestion" class="big-btn" type="button">聽一聽</button>
         <button id="slowQuestion" class="big-btn secondary" type="button">慢速聽</button>
         <button id="nextQuestion" class="big-btn secondary" type="button">下一站</button>
       </div>
-      <div id="choices" class="choice-grid" aria-label="答案車卡"></div>
+      <div id="choices" class="choice-grid sound-ticket-grid" aria-label="答案 sound tickets"></div>
       <p id="feedback" class="status" aria-live="polite"></p>
     </div>
   </section>
 
   <section id="resultScreen" class="screen" aria-labelledby="resultTitle">
-    <div class="card hero">
+    <div class="card hero arrival-certificate">
       <div class="hero-emoji" aria-hidden="true">🚂 ⭐ 🎉</div>
       <h1 id="resultTitle">火車到站！</h1>
+      <p class="small">今日完成 Phonics Train Journey，收集 sound tickets。</p>
       <div id="finalScore" class="final-score">0 / 5</div>
       <p id="resultNote"></p>
       <div class="row center">
